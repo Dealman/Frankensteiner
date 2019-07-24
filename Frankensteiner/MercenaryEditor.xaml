@@ -1,0 +1,69 @@
+﻿<Controls:MetroWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Frankensteiner"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared" x:Name="metroWindow" x:Class="Frankensteiner.MercenaryEditor"
+        mc:Ignorable="d"
+        Title="Mercenary Editor - Editing MercenaryName" Height="450" Width="800" TitleCaps="False" WindowStartupLocation="CenterOwner">
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout x:Name="settingsFlyout" Header="Editing Tools" Position="Bottom" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Controls:FlyoutsControl}, Path=ActualHeight}" Opacity="{Binding Value, ElementName=sliderFlyoutOpacity}">
+                <Grid>
+                    <Controls:RangeSlider x:Name="sliderRandomRange" Margin="31,41,67,0" Maximum="65535" SmallChange="1" TickPlacement="TopLeft" TickFrequency="1024" MinRangeWidth="1" UpperValue="65535" IsSnapToTickEnabled="True" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Height="26"/>
+                    <Label Content="Randomize a Value Between" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Label Content="{Binding LowerValue, ElementName=sliderRandomRange}" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
+                    <Label Content="{Binding UpperValue, ElementName=sliderRandomRange}" HorizontalAlignment="Right" Margin="0,41,15,0" VerticalAlignment="Top" Width="47"/>
+                    <Button x:Name="bRandomize" Content="Randomize" Margin="31,72,67,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BRandomize_Click"/>
+                    <Grid Margin="31,104,67,0" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="bMinimizeAll" Content="Minimize All" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Margin="0,0,2,0" Click="BMinimizeAll_Click"/>
+                        <Button x:Name="bMaximizeAll" Content="Maximize All" Grid.Column="1" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Margin="2,0,0,0" Click="BMaximizeAll_Click"/>
+                    </Grid>
+                    <Button x:Name="bFrankenstein" Content="Frankenstein" Margin="31,136,67,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" FontFamily="Segoe Print" FontSize="10" ToolTip="Randomizes all values to either minimum or maximum possible values. (0 or 65535)" Click="BFrankenstein_Click"/>
+                    <Label Content="Flyout Opacity" Margin="10,0,0,31" VerticalAlignment="Bottom" HorizontalContentAlignment="Center"/>
+                    <Slider x:Name="sliderFlyoutOpacity" Margin="10,0,15,10" VerticalAlignment="Bottom" SmallChange="0.01" TickPlacement="TopLeft" AutoToolTipPlacement="TopLeft" Value="0.75" Maximum="1" AutoToolTipPrecision="2" Ticks="0.5, 0.25, 0.50, 0.75, 1.0" Minimum="0.05"/>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+    <Grid x:Name="gBackground" Background="#FF454545">
+        <Label Content="Mercenary Name:" Margin="10,10,679,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <DataGrid x:Name="dgValueList" Margin="10,72,10,76" SelectionMode="Single" IsReadOnly="True" BorderThickness="2" AlternationCount="2" EnableRowVirtualization="False" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Face Values" Width="*" CanUserReorder="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:FaceValueSlider/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid Margin="10,0,10,10" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="bSave" Content="Save" Margin="10,1" VerticalAlignment="Center" Controls:ControlsHelper.ContentCharacterCasing="Normal" IsDefault="True" Click="BSave_Click"/>
+            <Button x:Name="bCancel" Content="Cancel" Grid.Column="1" Margin="10,1" VerticalAlignment="Center" Controls:ControlsHelper.ContentCharacterCasing="Normal" IsCancel="True"/>
+        </Grid>
+        <Button x:Name="bOpenRandomizer" Content="Show Editing Tools" Margin="10,0,10,44" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BOpenRandomizer_Click"/>
+        <TextBox x:Name="tbNewName" Margin="118,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Change Name..." TextChanged="TbNewName_TextChanged"/>
+        <Grid Margin="13,41,10,0" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Translation" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0"/>
+            <Label Content="Rotation" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0"/>
+            <Label Content="Scale" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0"/>
+        </Grid>
+    </Grid>
+</Controls:MetroWindow>

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frankensteiner", "Frankensteiner\Frankensteiner.csproj", "{E2815F98-7574-4D57-8E8D-F8066440EB10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2815F98-7574-4D57-8E8D-F8066440EB10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2815F98-7574-4D57-8E8D-F8066440EB10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2815F98-7574-4D57-8E8D-F8066440EB10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2815F98-7574-4D57-8E8D-F8066440EB10}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB3DA50D-C204-45BD-B275-09DAB8E35B25}
+	EndGlobalSection
+EndGlobal

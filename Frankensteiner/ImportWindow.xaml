@@ -1,0 +1,23 @@
+﻿<Controls:MetroWindow x:Class="Frankensteiner.ImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:local="clr-namespace:Frankensteiner"
+        mc:Ignorable="d"
+        Title="Mercenary Importer" Height="300" Width="600" MinHeight="300" MinWidth="600" WindowStartupLocation="CenterOwner" TitleCaps="False">
+    <Grid>
+        <TextBox x:Name="tbMercenaryCode" Margin="10,10,10,72" TextWrapping="Wrap" Controls:TextBoxHelper.Watermark="Paste mercenary code here..."/>
+        <Button x:Name="bValidate" Content="Validate" Margin="10,0,10,40" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BValidate_Click"/>
+        <Grid Margin="10,0,10,8" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="bSave" Content="Save" VerticalAlignment="Top" Margin="0,0,2,0" IsDefault="True" Controls:ControlsHelper.ContentCharacterCasing="Normal" IsEnabled="False" Click="BSave_Click"/>
+            <Button x:Name="bCancel" Content="Cancel" Grid.Column="1" VerticalAlignment="Top" Margin="2,0,0,0" IsCancel="True" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BCancel_Click"/>
+        </Grid>
+
+    </Grid>
+</Controls:MetroWindow>
