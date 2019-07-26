@@ -5,8 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Frankensteiner"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:fa="clr-namespace:FontAwesome.Net;assembly=FontAwesome.Net"
         mc:Ignorable="d"
         Title="Frankensteiner" Height="450" Width="600" TitleCaps="False" MinWidth="600" MinHeight="450" ResizeMode="CanResizeWithGrip" Closing="MetroWindow_Closing">
+    <Controls:MetroWindow.Resources>
+        <FontFamily x:Key="FontAwesome">pack://application:,,,/FontAwesome.Net;component/Fonts/#FontAwesome</FontFamily>
+    </Controls:MetroWindow.Resources>
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Reddit"/>
+            <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github_alt}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="GitHub" Click="BGithub_Click"/>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <Grid x:Name="gWindowBG" Background="#FF454545">
         <TabControl Margin="10">
             <TabItem Header="Mercenaries">
@@ -120,7 +130,49 @@
                 </Grid>
             </TabItem>
             <TabItem Header="About">
-                <Grid x:Name="gAboutBG" Background="#FF454545"/>
+                <Grid x:Name="gAboutBG" Background="#FF454545">
+                    <RichTextBox x:Name="rtbAboutText" Margin="10" IsReadOnly="True">
+                        <FlowDocument>
+                            <Paragraph TextAlignment="Center">
+                                <Run BaselineAlignment="Center" FontWeight="Bold" Text="Frankensteiner"/>
+                                <LineBreak/>
+                                <Run x:Name="runVersion" FontStyle="Italic" Text=""/>
+                                <LineBreak/>
+                                <Run/>
+                                <LineBreak/>
+                                <Run Text="This is a program that lets you customize the facial appearance of mercenaries in Mordhau beyond the game's typical limits. Typically, every face is symmetrical - to avoid horrible mostrosities from being made."/>
+                                <LineBreak/>
+                                <Run/>
+                                <LineBreak/>
+                                <Run Text="...Or so they thought."/>
+                            </Paragraph>
+                            <Paragraph TextAlignment="Center">
+                                <Run FontWeight="Bold" Text="Some Tips:"/>
+                                <LineBreak/>
+                                <Run Text="• You can right-click the [...] buttons to open the set folder."/>
+                                <LineBreak/>
+                                <Run Text="• Right-click mercenaries in the list for options to save, edit and revert."/>
+                                <LineBreak/>
+                                <Run Text="• You can also double-click a mercenary to edit them."/>
+                                <LineBreak/>
+                                <Run Text="• Frankenstein button is best button."/>
+                                <LineBreak/>
+                                <Run Text="• Disable startup movies to load into the game a bit faster if you find yourself restart a lot."/>
+                                <LineBreak/>
+                                <Run Text="• Report any bugs you encounter, pls."/>
+                                <LineBreak/>
+                                <Run Text="• Support Triternion, they're awesome! No seriously, they are. It literally says so on their website."/>
+                                <LineBreak/>
+                                <Run Text="• If you're a better programmer than me, which you probably are - you can help improve this program via GitHub."/>
+                                <Run Text=" "/>
+                                <InlineUIContainer>
+                                    <Separator
+                    />
+                                </InlineUIContainer>
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

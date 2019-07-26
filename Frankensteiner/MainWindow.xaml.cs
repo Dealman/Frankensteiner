@@ -26,22 +26,16 @@ using System.Windows.Shapes;
 
 namespace Frankensteiner
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : MetroWindow
     {
         string[] appThemes = { "Dark", "Light" };
         string[] appAccents = { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" };
-        public List<Mercenary> loadedMercenaries = new List<Mercenary>();
+        private string gameConfigPath;
         private ConfigParser config;
-        private FileSystemWatcher watcher = new FileSystemWatcher();
+        public List<Mercenary> loadedMercenaries = new List<Mercenary>();
         private DateTime lastParsed;
         private string lastMD5;
         private string processPath;
-        public bool conflictDetected = false;
-
-        private string gameConfigPath;
 
         public MainWindow()
         {
@@ -153,6 +147,11 @@ namespace Frankensteiner
                 metroWindow.Height = Properties.Settings.Default.appStartupSize.Y;
             }
             #endregion
+            #region Set App Version in About Tab
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
+            #endregion
         }
 
         #region Events & Methods for Changing of Theme/Accent
@@ -219,6 +218,10 @@ namespace Frankensteiner
                     config = new ConfigParser(gameConfigPath);
                     if (config.ParseConfig())
                     {
+                        if(lbCharacterList.Items.Count > 0)
+                        {
+                            loadedMercenaries.Clear();
+                        }
                         config.ProcessMercenaries();
                         loadedMercenaries = config.Mercenaries;
                         lbCharacterList.ItemsSource = loadedMercenaries;
@@ -923,6 +926,11 @@ namespace Frankensteiner
         {
             Properties.Settings.Default.cfgZIPLimit = e.NewValue.Value;
             Properties.Settings.Default.Save();
+        }
+
+        private void BGithub_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/Dealman/Frankensteiner");
         }
     }
 }
