@@ -1121,9 +1121,9 @@ namespace Frankensteiner
                 // Revert Keybind
                 if (e.Key == Key.Z && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
                 {
-                    if (lbCharacterList.SelectedItems.Count == 1)
+                    for(int i = 0; i < lbCharacterList.SelectedItems.Count; i++)
                     {
-                        MercenaryItem _selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                        MercenaryItem _selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
                         if (_selectedMerc != null)
                         {
                             // Normal or Horde/BR Mercenary With Changes - Revert
@@ -1145,10 +1145,6 @@ namespace Frankensteiner
                                 }
                             }
                         }
-                    }
-                    else if (lbCharacterList.SelectedItems.Count > 1)
-                    {
-                        SaveAllMercenaries(GetModifiedMercenaries());
                     }
                 }
                 // Frankenstein Keybind
