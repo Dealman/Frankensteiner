@@ -26,15 +26,15 @@
         <Label x:Name="lDescription" Content="{Binding Path=Description, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="9" Grid.Row="0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Background="{x:Null}"/>
         <!-- Translation -->
         <Label Content="0" Grid.Row="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right"/>
-        <Slider x:Name="sliderTranslation" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Translation, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft"/>
+        <Slider x:Name="sliderTranslation" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Translation, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft" IsMoveToPointEnabled="True"/>
         <Label Content="65535" Grid.Column="2" Grid.Row="1" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
         <!-- Rotation -->
         <Label Content="0" Grid.Row="1" Grid.Column="3" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right"/>
-        <Slider x:Name="sliderRotation" Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Rotation, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft"/>
+        <Slider x:Name="sliderRotation" Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Rotation, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft" IsMoveToPointEnabled="True"/>
         <Label Content="65535"  Grid.Row="1" Grid.Column="5" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
         <!-- Scale -->
         <Label Content="0" Grid.Row="1" Grid.Column="6" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right"/>
-        <Slider x:Name="sliderScale" Grid.Row="1" Grid.Column="7" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Scale, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft"/>
+        <Slider x:Name="sliderScale" Grid.Row="1" Grid.Column="7" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Scale, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft" IsMoveToPointEnabled="True"/>
         <Label Content="65535"  Grid.Row="1" Grid.Column="8" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>
