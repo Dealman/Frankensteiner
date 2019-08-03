@@ -13,8 +13,9 @@
     </Controls:MetroWindow.Resources>
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Reddit" Click="BReddit_Click"/>
-            <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github_alt}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="GitHub" Click="BGithub_Click"/>
+            <Button x:Name="bMordhau" Content="M" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Post on Mordhau Forums" Click="BMordhau_Click"/>
+            <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github_alt}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to GitHub" Click="BGithub_Click"/>
+            <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Reddit Thread" Click="BReddit_Click"/>
             <Button x:Name="bTitleSave" Visibility="Collapsed" Content="Save Mercenaries" Click="BTitleSave_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>

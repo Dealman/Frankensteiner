@@ -1065,7 +1065,11 @@ namespace Frankensteiner
         }
         private void BReddit_Click(object sender, RoutedEventArgs e)
         {
-            //Process.Start("https://github.com/Dealman/Frankensteiner");
+            Process.Start("https://www.reddit.com/r/Mordhau/comments/cll3kl/release_frankensteiner_v1200/");
+        }
+        private void BMordhau_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://mordhau.com/forum/topic/19301/release-frankensteiner-create-asymmetric-faces/");
         }
         private void BTitleSave_Click(object sender, RoutedEventArgs e)
         {
