@@ -20,7 +20,7 @@ namespace Frankensteiner
     /// </summary>
     public partial class ImportWindow : MetroWindow
     {
-        private Mercenary testMerc;
+        private MercenaryItem testMerc;
 
         public ImportWindow()
         {
@@ -33,7 +33,7 @@ namespace Frankensteiner
         {
             if(!String.IsNullOrWhiteSpace(tbMercenaryCode.Text))
             {
-                testMerc = new Mercenary(tbMercenaryCode.Text);
+                testMerc = new MercenaryItem(tbMercenaryCode.Text);
                 if(testMerc.ValidateMercenaryCode())
                 {
                     if(testMerc.isHordeMercenary)
@@ -63,9 +63,9 @@ namespace Frankensteiner
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             testMerc.ItemText = String.Format("{0} - Unsaved Imported Mercenary!", testMerc.Name);
             SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-            testMerc.BackgroundColor = newColor;
+            testMerc.BackgroundColour = newColor;
             testMerc.isOriginal = true;
-            testMerc.importedMercenary = true;
+            testMerc.isImportedMercenary = true;
             mainWindow.AddImportedMercenary(testMerc);
             this.DialogResult = true;
         }

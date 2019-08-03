@@ -2,6 +2,7 @@
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -32,15 +34,12 @@ namespace Frankensteiner
         string[] appAccents = { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" };
         private string gameConfigPath;
         private ConfigParser config;
-        public List<Mercenary> loadedMercenaries = new List<Mercenary>();
-        private DateTime lastParsed;
-        private string lastMD5;
-        private string processPath;
+        private ObservableCollection<MercenaryItem> _loadedMercenaries = new ObservableCollection<MercenaryItem>();
+        private bool changeDetected = false;
 
         public MainWindow()
         {
             InitializeComponent();
-            // TODO: Read Settings When Initializing - Remember Theme/Accents
             #region Auto-find Game.ini + Set Default Backup Folder
             if (String.IsNullOrWhiteSpace(Properties.Settings.Default.cfgConfigPath))
             {
@@ -115,6 +114,10 @@ namespace Frankensteiner
             cbConflictWarnings.IsChecked = Properties.Settings.Default.cfgConflictWarnings;
             // Auto Restart Mordhau
             cbAutoCloseGame.IsChecked = Properties.Settings.Default.cfgAutoClose;
+            cbRestartMordhau.IsChecked = Properties.Settings.Default.cfgRestartMordhau;
+            cbRestartMordhauMode.IsChecked = Properties.Settings.Default.cfgRestartMordhauMode;
+            // Shortcuts
+            cbShortcutKeys.IsChecked = Properties.Settings.Default.cfgShortcutsEnabled;
             #endregion
             #region Set Application Theme & Accent
             try
@@ -152,6 +155,7 @@ namespace Frankensteiner
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
+            lbCharacterList.ItemsSource = _loadedMercenaries;
         }
 
         #region Events & Methods for Changing of Theme/Accent
@@ -180,12 +184,11 @@ namespace Frankensteiner
             Properties.Settings.Default.appTheme = cbi.Content.ToString();
             Properties.Settings.Default.Save();
             UpdateGridBackgrounds();
-            foreach (Mercenary mercenary in loadedMercenaries)
+            foreach (MercenaryItem mercenary in _loadedMercenaries)
             {
                 SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                mercenary.BackgroundColor = newColor;
+                mercenary.BackgroundColour = newColor;
             }
-            lbCharacterList.Items.Refresh();
         }
 
         private void CbAppAccents_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -207,7 +210,6 @@ namespace Frankensteiner
             Properties.Settings.Default.Save();
         }
         #endregion
-
         #region Mercenary List Logic
         private void BRefreshCharacters_Click(object sender, RoutedEventArgs e)
         {
@@ -218,23 +220,21 @@ namespace Frankensteiner
                     config = new ConfigParser(gameConfigPath);
                     if (config.ParseConfig())
                     {
-                        if(lbCharacterList.Items.Count > 0)
+                        if(_loadedMercenaries.Count > 0)
                         {
-                            loadedMercenaries.Clear();
+                            _loadedMercenaries.Clear();
                         }
                         config.ProcessMercenaries();
-                        loadedMercenaries = config.Mercenaries;
-                        lbCharacterList.ItemsSource = loadedMercenaries;
-                        foreach (Mercenary mercenary in loadedMercenaries)
+                        for(int i=0; i < config.Mercenaries.Count; i++)
+                        {
+                            _loadedMercenaries.Add(config.Mercenaries[i]);
+                        }
+                        foreach (MercenaryItem mercenary in _loadedMercenaries)
                         {
                             SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                            mercenary.BackgroundColor = newColor;
+                            mercenary.BackgroundColour = newColor;
                         }
-                        lbCharacterList.Items.Refresh();
                         lbCharacterList.IsEnabled = true;
-
-                        lastParsed = DateTime.UtcNow.ToLocalTime();
-                        lastMD5 = GetConfigMD5();
                     }
                 }
             } catch (Exception eggseption) {
@@ -244,16 +244,23 @@ namespace Frankensteiner
 
         private void LbCharacterList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary;
-            if(selectedMerc != null)
+            if(lbCharacterList.SelectedItems.Count == 1 && lbCharacterList.SelectedIndex >= 0)
             {
-                MercenaryEditor mercEditor = new MercenaryEditor(selectedMerc);
-                mercEditor.Title = String.Format("Mercenary Editor - Editing {0}", selectedMerc.Name);
-                if(mercEditor.ShowDialog().Value)
+                MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                if (selectedMerc != null)
                 {
-                    lbCharacterList.Items.Refresh();
-                } else {
-                    lbCharacterList.Items.Refresh();
+                    MercenaryEditor mercEditor = new MercenaryEditor(selectedMerc);
+                    mercEditor.Title = String.Format("Mercenary Editor - Editing {0}", selectedMerc.Name);
+                    if (mercEditor.ShowDialog().Value)
+                    {
+                        // TODO: Check for changes here, if yes, enable titlebar save
+                        if(!selectedMerc.isOriginal)
+                        {
+                            bTitleSave.Visibility = Visibility.Visible;
+                        }
+                    } else {
+
+                    }
                 }
             }
         }
@@ -276,6 +283,7 @@ namespace Frankensteiner
                 System.Windows.MessageBox.Show(String.Format("An error occured whilst trying to write to config. Do not worry, nothing was actually writen to the config file yet! Error Message:\n\n{0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         private void CreateZIPBackup()
         {
             try
@@ -316,189 +324,251 @@ namespace Frankensteiner
             }
         }
 
-        private bool SaveMercenaryToConfig(Mercenary mercenary)
+        private List<MercenaryItem> GetModifiedMercenaries()
         {
-            if(!String.IsNullOrWhiteSpace(gameConfigPath))
-            {
-                #region Check for Mordhau Process
-                if (!Properties.Settings.Default.cfgAutoClose)
-                {
-                    if(IsMordhauRunning())
-                    {
-                        if (System.Windows.MessageBox.Show("Mordhau is running!\n\nIf you save to config now, some changes may be overwritten when you restart Mordhau. Do you wish to automagically restart Mordhau before saving?\n\n", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                        {
-                            KillMordhau();
-                        }
-                    }
-                } else {
-                    if(IsMordhauRunning())
-                    {
-                        KillMordhau();
-                    }
-                }
-                #endregion
-                #region Check for Conflicts
-                if(Properties.Settings.Default.cfgConflictWarnings)
-                {
-                    string newMD5 = GetConfigMD5();
-                    if(newMD5 != lastMD5)
-                    {
-                        FileInfo fi = new FileInfo(gameConfigPath);
-                        if (System.Windows.MessageBox.Show(String.Format("Conflicts Detected!\n\nConfig Parsed: {0}\nLast Modified: {1}\nPrevious MD5: {2}\nNew MD5: {3}\n\nProgram might be unable to save certain mercenaries if they were modified. If this is the case, you can export them and overwrite manually.\n\nDo you wish to continue?\n\nThis warning can be disabled in the settings.", lastParsed.ToLocalTime(), fi.LastWriteTime.ToLocalTime(), lastMD5, newMD5), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                        {
-                            // TODO: Window to compare differences using DiffMatchPatch. Also method to try and check if the mercenary exists via its OriginalName. If true, just replace the OriginalConfigEntry propery
-                            return false;
-                        }
-                    }
-                }
-                #endregion
-                CreateBackup();
-                CreateZIPBackup();
+            List<MercenaryItem> _modifiedMercs = new List<MercenaryItem>();
 
-                string configContents = File.ReadAllText(gameConfigPath);
-                if (configContents.Contains(mercenary.OriginalConfigEntry))
+            if(_loadedMercenaries.Count > 0)
+            {
+                for(int i=0; i < _loadedMercenaries.Count; i++)
                 {
-                    //System.Windows.MessageBox.Show(mercenary.OriginalConfigEntry.ToString());
-                    //System.Windows.MessageBox.Show(mercenary.ToString());
-                    configContents = configContents.Replace(mercenary.OriginalConfigEntry, mercenary.ToString());
-                    File.WriteAllText(gameConfigPath, configContents);
-                    mercenary.SetNewAsOriginal();
+                    if(!_loadedMercenaries[i].isOriginal || _loadedMercenaries[i].isImportedMercenary)
+                    {
+                        _modifiedMercs.Add(_loadedMercenaries[i]);
+                    }
+                }
+                return _modifiedMercs;
+            } else {
+                return _modifiedMercs;
+            }
+        }
+
+        private bool CheckForMercenaryConflict(MercenaryItem merc)
+        {
+            if(File.Exists(gameConfigPath))
+            {
+                string configContents = File.ReadAllText(gameConfigPath);
+                if(configContents.Contains(merc.OriginalEntry))
+                {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        private bool ResolveAllMercenaryConflicts(List<MercenaryItem> _invalidMercs)
+        {
+            if (File.Exists(gameConfigPath))
+            {
+                // We need to re-read the Config to get the new mercenaries
+                ConfigParser configParser = new ConfigParser(gameConfigPath);
+                configParser.ParseConfig();
+                // Create the Compare Window
+                CompareWindow compareWindow = new CompareWindow(_invalidMercs, configParser.GetParsedMercenariesList());
+                if (compareWindow.ShowDialog().Value)
+                {
                     return true;
                 } else {
-                    if(mercenary.importedMercenary)
-                    {
-                        Regex rx = new Regex("(SingletonVersion=.+)");
-                        string foundMatch = rx.Match(configContents).Value;
-                        configContents = configContents.Replace(foundMatch, foundMatch+"\n"+mercenary.ToString());
-                        File.WriteAllText(gameConfigPath, configContents);
-                        mercenary.SetNewAsOriginal();
-                        return true;
-                    } else {
-                        if(System.Windows.MessageBox.Show(String.Format("Unable to save mercenary - original config entry for {0} was not found.\n\nDo you want to copy this mercenary to the clipboard?", mercenary.OriginalName), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                        {
-                            System.Windows.Clipboard.SetText(mercenary.ToString());
-                        }
-                        return false;
-                    }                    
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        private void SaveAllMercenaries(List<MercenaryItem> _modifiedMercs)
+        {
+            // Prepare some lists
+            List<MercenaryItem> _validMercs = new List<MercenaryItem>();
+            List<MercenaryItem> _invalidMercs = new List<MercenaryItem>();
+            List<MercenaryItem> _importedMercs = new List<MercenaryItem>();
+            List<MercenaryItem> _failedToSave = new List<MercenaryItem>();
+            bool wasMordhauKilled = false;
+
+            #region Auto Close Mordhau Check
+            if (Properties.Settings.Default.cfgAutoClose)
+            {
+                if(IsMordhauRunning())
+                {
+                    KillMordhau();
+                    wasMordhauKilled = true;
                 }
             } else {
-                System.Windows.MessageBox.Show("Unable to save mercenary - unable to find Game.ini. Are you sure the path is correct?", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-        }
-
-        private void SaveAllMercenariesToConfig()
-        {
-            if (!String.IsNullOrWhiteSpace(gameConfigPath))
-            {
-                #region Check for Mordhau Process
-                if (!Properties.Settings.Default.cfgAutoClose)
+                if (IsMordhauRunning())
                 {
-                    if (IsMordhauRunning())
-                    {
-                        if (System.Windows.MessageBox.Show("Mordhau is running!\n\nIf you save to config now, some changes may be overwritten when you restart Mordhau. Do you wish to automagically restart Mordhau before saving?\n\n", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                        {
-                            KillMordhau();
-                        }
-                    }
-                }
-                else
-                {
-                    if (IsMordhauRunning())
+                    if (System.Windows.MessageBox.Show("Mordhau is running! Saving now may result in Mordhau overwriting changes when you close it.\n\nWould you like to close it automatically before proceeding?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     {
                         KillMordhau();
+                        wasMordhauKilled = true;
                     }
-                }
-                #endregion
-                #region Check for Conflicts
-                if (Properties.Settings.Default.cfgConflictWarnings)
-                {
-                    string newMD5 = GetConfigMD5();
-                    if (newMD5 != lastMD5)
-                    {
-                        FileInfo fi = new FileInfo(gameConfigPath);
-                        if (System.Windows.MessageBox.Show(String.Format("Conflicts Detected!\n\nConfig Parsed: {0}\nLast Modified: {1}\nPrevious MD5: {2}\nNew MD5: {3}\n\nProgram might be unable to save certain mercenaries if they were modified. If this is the case, you can export them and overwrite manually.\n\nDo you wish to continue?\n\nThis warning can be disabled in the settings.", lastParsed.ToLocalTime(), fi.LastWriteTime.ToLocalTime(), lastMD5, newMD5), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                        {
-                            // TODO: Window to compare differences using DiffMatchPatch. Also method to try and check if the mercenary exists via its OriginalName. If true, just replace the OriginalConfigEntry propery
-                            return;
-                        }
-                    }
-                }
-                #endregion
-                CreateBackup();
-                CreateZIPBackup();
-
-                string configContents = File.ReadAllText(gameConfigPath);
-                List<Mercenary> importedMercenaries = new List<Mercenary>();
-
-                for (int i=0; i < loadedMercenaries.Count; i++)
-                {
-                    if (!loadedMercenaries[i].importedMercenary)
-                    {
-                        if(!loadedMercenaries[i].isOriginal && !loadedMercenaries[i].isHordeMercenary)
-                        {
-                            if(configContents.Contains(loadedMercenaries[i].OriginalConfigEntry))
-                            {
-                                configContents = configContents.Replace(loadedMercenaries[i].OriginalConfigEntry, loadedMercenaries[i].ToString());
-                                loadedMercenaries[i].SetNewAsOriginal();
-                            } else {
-                                if (System.Windows.MessageBox.Show(String.Format("Unable to save mercenary - original config entry for {0} was not found.\n\nDo you want to copy this mercenary to the clipboard?", loadedMercenaries[i].OriginalName), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                                {
-                                    System.Windows.Clipboard.SetText(loadedMercenaries[i].ToString());
-                                }
-                            }
-                        }
-                    } else {
-                        importedMercenaries.Add(loadedMercenaries[i]);
-                    }
-                }
-                
-                // We make use of SingletonVersion=## to insert the imported mercs at the top
-                if(importedMercenaries.Count > 0)
-                {
-                    Regex rx = new Regex("(SingletonVersion=.+)");
-                    if(rx.IsMatch(configContents))
-                    {
-                        string oldSingleton = rx.Match(configContents).Value;
-                        string newSingleton = rx.Match(configContents).Value;
-                        for(int i=0; i < importedMercenaries.Count; i++)
-                        {
-                            newSingleton = String.Format(newSingleton + "\n{0}", importedMercenaries[i]);
-                            importedMercenaries[i].SetNewAsOriginal();
-                        }
-                        configContents = configContents.Replace(oldSingleton, newSingleton);
-                    }
-                }
-                File.WriteAllText(gameConfigPath, configContents);
-                if(Properties.Settings.Default.cfgAutoClose && !String.IsNullOrWhiteSpace(processPath))
-                {
-                    Process.Start(processPath);
                 }
             }
+            #endregion
+
+            #region Fetch Imported Mercenaries
+            for (int i = 0; i < _modifiedMercs.Count; i++)
+            {
+                if(_modifiedMercs[i].isImportedMercenary)
+                {
+                    _importedMercs.Add(_modifiedMercs[i]);
+                }
+            }
+            // If we found any imports, remove them from the main list (or else they will be seen as a conflict)
+            if(_importedMercs.Count > 0)
+            {
+                for(int i = 0; i < _importedMercs.Count; i++)
+                {
+                    _modifiedMercs.Remove(_importedMercs[i]);
+                }
+            }
+            #endregion
+
+            #region Conflict Checking & Resolving
+            // Check for conflicts, separate them into their corresponding list for easier managing
+            for (int i = 0; i < _modifiedMercs.Count; i++)
+            {
+                if(CheckForMercenaryConflict(_modifiedMercs[i]))
+                {
+                    _invalidMercs.Add(_modifiedMercs[i]);
+                } else {
+                    _validMercs.Add(_modifiedMercs[i]);
+                }
+            }
+            // Try and resolve invalid mercenaries first
+            if (_invalidMercs.Count > 0)
+            {
+                if(System.Windows.MessageBox.Show(String.Format("Conflicts were detected for those mercenaries:\n\n{0}\n\nWould you like to try and resolve those manually? Choosing no will leave them unsaved.", string.Join("\n", _modifiedMercs.Select(x => String.Format("{0} [{1}]", x.Name, x.OriginalName)).ToArray())), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    // Users wants to resolve, try to resolve
+                    if(ResolveAllMercenaryConflicts(_invalidMercs))
+                    {
+                        // Conflicts were successfully resolved
+                        for(int i = 0; i < _invalidMercs.Count; i++)
+                        {
+                            _validMercs.Add(_invalidMercs[i]);
+                        }
+                    } else {
+                        // Conflicts were not resolved
+                        for (int i = 0; i < _invalidMercs.Count; i++)
+                        {
+                            _failedToSave.Add(_invalidMercs[i]);
+                        }
+                    }
+                } else {
+                    // User does not want to resolve
+                    for (int i = 0; i < _invalidMercs.Count; i++)
+                    {
+                        _failedToSave.Add(_invalidMercs[i]);
+                    }
+                }
+            }
+            #endregion
+
+            #region New Config Prepartion
+            // Read the config and prepare the new contents
+            string configContents = File.ReadAllText(gameConfigPath);
+            for(int i = 0; i < _validMercs.Count; i++)
+            {
+                if(configContents.Contains(_validMercs[i].OriginalEntry))
+                {
+                    configContents = configContents.Replace(_validMercs[i].OriginalEntry, _validMercs[i].ToString());
+                    _validMercs[i].SetAsOriginal();
+                } else {
+                    _failedToSave.Add(_validMercs[i]);
+                }
+            }
+            // And the imported mercenaries
+            if(_importedMercs.Count > 0)
+            {
+                Regex rx = new Regex("(SingletonVersion=.+)");
+                if(rx.IsMatch(configContents))
+                {
+                    string oldSingleton = rx.Match(configContents).Value;
+                    string newSingleton = rx.Match(configContents).Value;
+                    for(int i = 0; i < _importedMercs.Count; i++)
+                    {
+                        newSingleton = String.Format("{0}\n{1}", newSingleton, _importedMercs[i].ToString());
+                        _validMercs.Add(_importedMercs[i]);
+                        _importedMercs[i].SetAsOriginal();
+                    }
+                    configContents = configContents.Replace(oldSingleton, newSingleton);
+                } else {
+                    System.Windows.MessageBox.Show("Something went wrong when trying to save imported mercenaries.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            #endregion
+
+            #region Create Backup(s) Before Writing
+            CreateBackup();
+            CreateZIPBackup();
+            #endregion
+
+            #region Write to Config
+            if(_validMercs.Count > 0)
+            {
+                File.WriteAllText(gameConfigPath, configContents);
+                System.Windows.MessageBox.Show(String.Format("Successfully saved these mercenaries:\n\n{0}", string.Join("\n", _validMercs.Select(x => x.Name).ToArray())), "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                bTitleSave.Visibility = Visibility.Collapsed;
+            }
+            #endregion
+
+            #region Alert User of Unsaved Mercenaries
+            if (_failedToSave.Count > 0)
+            {
+                System.Windows.MessageBox.Show(String.Format("{0} mercenaries were unable to save for an unknown reason. Those mercenaries are:\n\n{1}", _failedToSave.Count, string.Join("\n", _failedToSave.Select(x => x.Name).ToArray())), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            #endregion
+
+            #region Auto Restart Mordhau
+            if(Properties.Settings.Default.cfgRestartMordhau && cbRestartMordhau.IsChecked.Value)
+            {
+                if(Properties.Settings.Default.cfgRestartMordhauMode && cbRestartMordhauMode.IsChecked.Value)
+                {
+                    if(wasMordhauKilled)
+                    {
+                        string mordhauExe = tbMordhauPath.Text + @"\Mordhau\Binaries\Win64\Mordhau-Win64-Shipping.exe";
+                        if (File.Exists(mordhauExe))
+                        {
+                            Process.Start(mordhauExe);
+                        } else {
+                            System.Windows.MessageBox.Show(String.Format("Unable to restart Mordhau, unable to find executable. This is where I looked:\n\n{0}", mordhauExe), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                } else {
+                    string mordhauExe = tbMordhauPath.Text + @"\Mordhau\Binaries\Win64\Mordhau-Win64-Shipping.exe";
+                    if (File.Exists(mordhauExe))
+                    {
+                        Process.Start(mordhauExe);
+                    } else {
+                        System.Windows.MessageBox.Show(String.Format("Unable to restart Mordhau, unable to find executable. This is where I looked:\n\n{0}", mordhauExe), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            #endregion
         }
 
-        public void AddImportedMercenary(Mercenary importedMerc)
+        public void AddImportedMercenary(MercenaryItem importedMerc)
         {
             if(importedMerc != null)
             {
                 if(importedMerc.isHordeMercenary)
                 {
-                    for(int i=0; i < loadedMercenaries.Count; i++)
+                    for(int i=0; i < _loadedMercenaries.Count; i++)
                     {
-                        if(loadedMercenaries[i].isHordeMercenary)
+                        if(_loadedMercenaries[i].isHordeMercenary)
                         {
-                            loadedMercenaries[i].FaceValues = importedMerc.FaceValues;
-                            loadedMercenaries[i].ItemText = "Horde/BR - Unsaved Changes!";
-                            loadedMercenaries[i].isOriginal = false;
-                            lbCharacterList.Items.Refresh();
+                            _loadedMercenaries[i].FaceValues = importedMerc.FaceValues;
+                            _loadedMercenaries[i].ItemText = "Horde/BR - Unsaved Changes!";
+                            _loadedMercenaries[i].isOriginal = false;
                         }
                     }
                 } else {
-                    loadedMercenaries.Insert(0, importedMerc);
-                    lbCharacterList.Items.Refresh();
+                    _loadedMercenaries.Insert(0, importedMerc);
                 }
             }
         }
+
         private void ToggleStartupMovies(bool toggle)
         {
             if(!String.IsNullOrWhiteSpace(tbMordhauPath.Text))
@@ -548,27 +618,6 @@ namespace Frankensteiner
             }
         }
 
-        private string GetConfigMD5()
-        {
-            if(Properties.Settings.Default.cfgCheckConflict)
-            {
-                if(!String.IsNullOrWhiteSpace(gameConfigPath) && File.Exists(gameConfigPath))
-                {
-                    MD5 md5 = MD5.Create();
-                    byte[] fileContents = File.ReadAllBytes(gameConfigPath);
-                    byte[] hash = md5.ComputeHash(fileContents);
-
-                    StringBuilder sb = new StringBuilder();
-                    for(int i=0; i < hash.Length; i++)
-                    {
-                        sb.Append(hash[i].ToString("X2"));
-                    }
-                    return sb.ToString();
-                }
-            }
-            return "";
-        }
-
         private bool IsMordhauRunning()
         {
             try
@@ -592,7 +641,6 @@ namespace Frankensteiner
                 Process[] processes = Process.GetProcessesByName("Mordhau-Win64-Shipping");
                 foreach (Process process in processes)
                 {
-                    processPath = process.MainModule.FileName; // Kinda ugly this, but CBA to re-do the save methods atm so will just assume it works tee-hee
                     process.Kill();
                     process.WaitForExit();
                 }
@@ -600,6 +648,51 @@ namespace Frankensteiner
                 System.Windows.MessageBox.Show(String.Format("An error has occured whilst trying to fetch and/or kill the Mordhau process.\n\nError Message: {0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void CheckForModifiedMercenaries()
+        {
+            if(_loadedMercenaries.Count > 0)
+            {
+                for(int i=0; i < _loadedMercenaries.Count; i++)
+                {
+                    if(!_loadedMercenaries[i].isOriginal || _loadedMercenaries[i].isImportedMercenary)
+                    {
+                        bTitleSave.Visibility = Visibility.Visible;
+                        changeDetected = true;
+                        break;
+                    } else {
+                        bTitleSave.Visibility = Visibility.Collapsed;
+                        changeDetected = false;
+                    }
+                }
+            }
+        }
+
+        #region UpdateContextItem Methods
+        private void UpdateContextItem(System.Windows.Controls.MenuItem item, string header)
+        {
+            if(item != null)
+            {
+                item.Header = header;
+            }
+        }
+        private void UpdateContextItem(System.Windows.Controls.MenuItem item, string header, bool enabled)
+        {
+            if(item != null)
+            {
+                item.Header = header;
+                item.IsEnabled = enabled;
+            }
+        }
+        private void UpdateContextItem(System.Windows.Controls.MenuItem item, string header, bool enabled, Visibility visibility)
+        {
+            if (item != null)
+            {
+                item.Header = header;
+                item.IsEnabled = enabled;
+                item.Visibility = visibility;
+            }
+        }
+        #endregion
 
         #region File & Folder Browsing (Config, Mordhau and Backup)
         private void BBrowseConfigPath_Click(object sender, RoutedEventArgs e)
@@ -686,12 +779,19 @@ namespace Frankensteiner
                 }
             }
         }
-
         private void TbConfigPath_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(tbConfigPath.Text))
             {
                 bRefreshCharacters.IsEnabled = true;
+            }
+        }
+        private void TbMordhauPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(!String.IsNullOrWhiteSpace(tbMordhauPath.Text))
+            {
+                cbAutoCloseGame.IsEnabled = true;
+                cbDisableMovies.IsEnabled = true;
             }
         }
         #endregion
@@ -756,11 +856,12 @@ namespace Frankensteiner
         private void CbDisableMovies_Click(object sender, RoutedEventArgs e)
         {
             ToggleStartupMovies(cbDisableMovies.IsChecked.Value);
-            //Properties.Settings.Default.Save();
         }
         private void CbAutoCloseGame_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgAutoClose = cbAutoCloseGame.IsChecked.Value;
+            cbRestartMordhau.IsEnabled = cbAutoCloseGame.IsChecked.Value;
+            cbRestartMordhauMode.IsEnabled = cbAutoCloseGame.IsChecked.Value;
             Properties.Settings.Default.Save();
         }
         private void CbCheckConflicts_Click(object sender, RoutedEventArgs e)
@@ -773,6 +874,21 @@ namespace Frankensteiner
             Properties.Settings.Default.cfgConflictWarnings = cbConflictWarnings.IsChecked.Value;
             Properties.Settings.Default.Save();
         }
+        private void CbRestartMordhau_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.cfgRestartMordhau = cbRestartMordhau.IsChecked.Value;
+            Properties.Settings.Default.Save();
+        }
+        private void CbRestartMordhauMode_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.cfgRestartMordhauMode = cbRestartMordhauMode.IsChecked.Value;
+            Properties.Settings.Default.Save();
+        }
+        private void CbShortcutKeys_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.cfgShortcutsEnabled = cbShortcutKeys.IsChecked.Value;
+            Properties.Settings.Default.Save();
+        }
         #endregion
 
         #region ListBox Context Menu Logic
@@ -781,156 +897,315 @@ namespace Frankensteiner
         {
             if (lbCharacterList.SelectedIndex != -1)
             {
-                Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary;
-                if(selectedMerc != null)
+                if(lbCharacterList.SelectedItems.Count == 1)
                 {
-                    lbContextEdit.Header = String.Format("Edit {0}", selectedMerc.Name);
-                        lbContextEdit.IsEnabled = true;
-                    lbContextSave.Header = String.Format("Save {0} Changes", selectedMerc.Name);
-                        lbContextSave.IsEnabled = (!selectedMerc.isOriginal || selectedMerc.isOriginal && selectedMerc.importedMercenary) ? true : false;
-                    lbContextRevert.Header = String.Format("Revert {0} Changes", selectedMerc.Name);
-                        lbContextRevert.IsEnabled = (!selectedMerc.isOriginal || !selectedMerc.isOriginal && selectedMerc.importedMercenary) ? true : false;
-                    lbContextExport.Header = String.Format("Export {0} to Clipboard", selectedMerc.Name);
-                        lbContextExport.IsEnabled = true;
-                    lbContextDelete.Header = String.Format("Delete {0}", selectedMerc.Name);
-                        lbContextDelete.Visibility = (selectedMerc.importedMercenary) ? Visibility.Visible : Visibility.Collapsed;
-                    // Check for any changes
-                    lbContextSaveAll.IsEnabled = false;
-                    lbContextRevertAll.IsEnabled = false;
-                    for (int i=0; i < loadedMercenaries.Count; i++)
+                    MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                    if (selectedMerc != null)
                     {
-                        if(!loadedMercenaries[i].isOriginal || loadedMercenaries[i].importedMercenary)
+                        bool changedOrImported = (!selectedMerc.isOriginal || selectedMerc.isOriginal && selectedMerc.isImportedMercenary) ? true : false;
+                        // Edit
+                        UpdateContextItem(lbContextEdit, String.Format("Edit {0}", selectedMerc.Name), true);
+                        UpdateContextItem(lbContextQuickEdit, String.Format("Open {0} in Mercenary Editor", selectedMerc.Name), true);
+                        UpdateContextItem(lbContextQuickFrankenstein, String.Format("Frankenstein {0}", selectedMerc.Name), true);
+                        UpdateContextItem(lbContextQuickRandomize, String.Format("Randomize {0}", selectedMerc.Name), true);
+                        // Save
+                        UpdateContextItem(lbContextSave, String.Format("Save {0}", selectedMerc.Name), changedOrImported);
+                        // Revert
+                        UpdateContextItem(lbContextRevert, String.Format("Revert {0}", selectedMerc.Name), changedOrImported);
+                        // Export
+                        UpdateContextItem(lbContextExport, String.Format("Export {0} to Clipboard", selectedMerc.Name), true);
+                        // Delete
+                        //TODO: Replace with Revert - alert user before
+                        //UpdateContextItem(lbContextDelete, String.Format("Delete {0}", selectedMerc.Name), selectedMerc.importedMercenary, Visibility.Visible);
+                    }
+                } else {
+                    bool changesDetected = false;
+                    // Get a List of the selected mercenaries
+                    List<MercenaryItem> selectedMercs = new List<MercenaryItem>();
+                    foreach(var merc in lbCharacterList.SelectedItems)
+                    {
+                        selectedMercs.Add((MercenaryItem)merc);
+                    }
+                    // Check for Changes
+                    for(int i=0; i < selectedMercs.Count; i++)
+                    {
+                        if(!selectedMercs[i].isOriginal)
                         {
-                            lbContextSaveAll.IsEnabled = true;
-                            lbContextRevertAll.IsEnabled = true;
+                            changesDetected = true;
                             break;
                         }
                     }
-                }
-            }
-        }
-        // Context Option: Edit
-        private void LbContextEdit_Click(object sender, RoutedEventArgs e)
-        {
-            Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary;
-            if (selectedMerc != null)
-            {
-                MercenaryEditor mercEditor = new MercenaryEditor(selectedMerc);
-                mercEditor.Title = String.Format("Mercenary Editor - Editing {0}", selectedMerc.Name);
-                if (mercEditor.ShowDialog().Value)
-                {
-                    lbCharacterList.Items.Refresh();
+                    // Edit
+                    UpdateContextItem(lbContextEdit, "Edit (Multiple Selected)", true);
+                    UpdateContextItem(lbContextQuickEdit, "Open in Mercenary Editor", false);
+                    UpdateContextItem(lbContextQuickFrankenstein, "Frankenstein (Multiple Selected)", true);
+                    UpdateContextItem(lbContextQuickRandomize, "Randomize (Multiple Selected)", true);
+                    // Save
+                    UpdateContextItem(lbContextSave, "Save (Multiple Selected)", changesDetected);
+                    // Revert
+                    UpdateContextItem(lbContextRevert, "Revert (Multiple Selected)", changesDetected);
+                    // Export
+                    UpdateContextItem(lbContextExport, "Export Selected Mercenaries to Clipboard", true);
                 }
             }
         }
         // Context Option: Save
         private void LbContextSave_Click(object sender, RoutedEventArgs e)
         {
-            Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary;
-            if (selectedMerc != null)
+            if(lbCharacterList.SelectedItems.Count == 1)
             {
-                if(SaveMercenaryToConfig(selectedMerc) && !String.IsNullOrWhiteSpace(processPath))
+                MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                if(selectedMerc != null)
                 {
-                    Process.Start(processPath);
+                    List<MercenaryItem> _modifiedMercs = new List<MercenaryItem>();
+                    _modifiedMercs.Add(selectedMerc);
+                    SaveAllMercenaries(_modifiedMercs);
                 }
-                lbCharacterList.Items.Refresh();
+            } else if(lbCharacterList.SelectedItems.Count > 1) {
+                SaveAllMercenaries(GetModifiedMercenaries());
             }
         }
         // Context Option: Revert
         private void LbContextRevert_Click(object sender, RoutedEventArgs e)
         {
-            Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary;
-            if (selectedMerc != null)
+            for(int i=0; i < lbCharacterList.SelectedItems.Count; i++)
             {
-                if (!selectedMerc.isOriginal)
+                MercenaryItem merc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                if (merc != null)
                 {
-                    selectedMerc.RevertCurrentChanges();
-                    lbCharacterList.Items.Refresh();
+                    if (merc.isImportedMercenary && merc.isOriginal)
+                    {
+                        if (System.Windows.MessageBox.Show(String.Format("{0} is an imported mercenary without any changes. Reverting now will delete this mercenary.\n\nAre you sure?", merc.Name), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        {
+                            _loadedMercenaries.Remove(merc);
+                        }
+                    } else if (merc.isImportedMercenary && !merc.isOriginal) {
+                        merc.RevertCurrentChanges();
+                    } else if (!merc.isImportedMercenary && !merc.isOriginal) {
+                        merc.RevertCurrentChanges();
+                    }
                 }
             }
+            CheckForModifiedMercenaries();
         }
         //Context Option: Export
         private void LbContextExport_Click(object sender, RoutedEventArgs e)
         {
-            Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary; // TODO: Try/Catch this?
-            if (selectedMerc != null)
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i < lbCharacterList.SelectedItems.Count; i++)
             {
-                if(selectedMerc.isOriginal)
+                MercenaryItem merc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                if (merc != null)
                 {
-                    System.Windows.Clipboard.SetText(selectedMerc.OriginalConfigEntry);
-                } else {
-                    System.Windows.Clipboard.SetText(selectedMerc.ToString());
+                    sb.Append(String.Format("{0}{1}", merc.ToString(), (lbCharacterList.SelectedItems.Count > 1 && i != lbCharacterList.SelectedItems.Count-1) ? "\n" : ""));
                 }
             }
+            System.Windows.Clipboard.SetText(sb.ToString());
         }
         // Context Option: Import
         private void LbContextImport_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: Open Import Window Here
             ImportWindow importer = new ImportWindow();
             if(importer.ShowDialog().Value)
             {
-                // Save
+                CheckForModifiedMercenaries();
             }
         }
-        // Context Option: Save All
-        private void LbContextSaveAll_Click(object sender, RoutedEventArgs e)
+        // Context Option: Quick Edit
+        private void LbContextQuickEdit_Click(object sender, RoutedEventArgs e)
         {
-            SaveAllMercenariesToConfig();
-            lbCharacterList.Items.Refresh();
-        }
-        // Context Option: Revert All
-        private void LbContextRevertAll_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Optimization? use the first for loop to check which mercenaries need to be reverted. Instead of looping them all a 2nd time.
-            int counter = 0;
-            for(int i=0; i < loadedMercenaries.Count; i++)
+            MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+            if (selectedMerc != null)
             {
-                if(!loadedMercenaries[i].isOriginal)
+                MercenaryEditor mercEditor = new MercenaryEditor(selectedMerc);
+                mercEditor.Title = String.Format("Mercenary Editor - Editing {0}", selectedMerc.Name);
+                if (mercEditor.ShowDialog().Value)
                 {
-                    counter++;
-                }
-            }
-
-            if(counter > 0)
-            {
-                if (System.Windows.MessageBox.Show(String.Format("Are you sure you want to revert all changes? This will restore all modified mercenaries to their original name and values. Can't be undone.\n\nYou'll be reverting {0} mercenaries to their original.", counter), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                {
-                    for (int i = 0; i < loadedMercenaries.Count; i++)
-                    {
-                        if (!loadedMercenaries[i].isOriginal)
-                        {
-                            loadedMercenaries[i].RevertCurrentChanges();
-                            lbCharacterList.Items.Refresh();
-                        }
-                    }
+                    CheckForModifiedMercenaries();
                 }
             }
         }
-        // Context Option: Delete Import
-        private void LbContextDelete_Click(object sender, RoutedEventArgs e)
+        // Context Option: Frankenstein
+        private void LbContextQuickFrankenstein_Click(object sender, RoutedEventArgs e)
         {
-            Mercenary selectedMerc = lbCharacterList.SelectedItem as Mercenary; // TODO: Try/Catch this?
-            if(selectedMerc != null)
+            for(int i=0; i < lbCharacterList.SelectedItems.Count; i++)
             {
-                if (System.Windows.MessageBox.Show(String.Format("Are you sure you want to delete {0}? This action can't be undone.", selectedMerc.Name), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                MercenaryItem merc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                if(merc != null)
                 {
-                    loadedMercenaries.Remove(selectedMerc);
-                    lbCharacterList.Items.Refresh();
+                    merc.Frankenstein();
                 }
-            }            
+            }
+            CheckForModifiedMercenaries();
+        }
+        // Context Option: Randomize
+        private void LbContextQuickRandomize_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < lbCharacterList.SelectedItems.Count; i++)
+            {
+                MercenaryItem merc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                if (merc != null)
+                {
+                    merc.Randomize();
+                }
+            }
+            CheckForModifiedMercenaries();
         }
         #endregion
 
+        #region Button Events
         private void NudZipLimit_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double?> e)
         {
             Properties.Settings.Default.cfgZIPLimit = e.NewValue.Value;
             Properties.Settings.Default.Save();
         }
-
         private void BGithub_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://github.com/Dealman/Frankensteiner");
+        }
+        private void BReddit_Click(object sender, RoutedEventArgs e)
+        {
+            //Process.Start("https://github.com/Dealman/Frankensteiner");
+        }
+        private void BTitleSave_Click(object sender, RoutedEventArgs e)
+        {
+            List<MercenaryItem> _modifiedMercs = GetModifiedMercenaries();
+
+            if(_modifiedMercs.Count > 0)
+            {
+                SaveAllMercenaries(_modifiedMercs);
+            } else {
+                // Shouldn't be possible to reach this, but leave a message just in case.
+                System.Windows.MessageBox.Show("Something went wrong! No modified mercenaries were found - unable to save.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        #endregion
+
+        private void LbCharacterList_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(Properties.Settings.Default.cfgShortcutsEnabled)
+            {
+                // Enter - Open Mercenary Editor
+                if (e.Key == Key.Enter)
+                {
+                    if (lbCharacterList.SelectedItems.Count == 1)
+                    {
+                        MercenaryItem _selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                        if (_selectedMerc != null)
+                        {
+                            MercenaryEditor mercEditor = new MercenaryEditor(_selectedMerc);
+                            mercEditor.Title = String.Format("Mercenary Editor - Editing {0}", _selectedMerc.Name);
+                            if (mercEditor.ShowDialog().Value)
+                            {
+                                CheckForModifiedMercenaries();
+                            }
+                        }
+                    }
+                }
+                // Save Keybind
+                if (e.Key == Key.S && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    if (lbCharacterList.SelectedItems.Count == 1)
+                    {
+                        MercenaryItem _selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                        if (_selectedMerc != null)
+                        {
+                            List<MercenaryItem> _modifiedMercs = new List<MercenaryItem>();
+                            _modifiedMercs.Add(_selectedMerc);
+                            SaveAllMercenaries(_modifiedMercs);
+                        }
+                    } else if (lbCharacterList.SelectedItems.Count > 1) {
+                        SaveAllMercenaries(GetModifiedMercenaries());
+                    }
+                }
+                // Revert Keybind
+                if (e.Key == Key.Z && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    if (lbCharacterList.SelectedItems.Count == 1)
+                    {
+                        MercenaryItem _selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                        if (_selectedMerc != null)
+                        {
+                            // Normal or Horde/BR Mercenary With Changes - Revert
+                            if (!_selectedMerc.isOriginal && !_selectedMerc.isImportedMercenary || !_selectedMerc.isOriginal && _selectedMerc.isHordeMercenary)
+                            {
+                                _selectedMerc.RevertCurrentChanges();
+                            }
+                            // Imported & Changed Mercenary - Revert
+                            if (_selectedMerc.isImportedMercenary && !_selectedMerc.isOriginal)
+                            {
+                                _selectedMerc.RevertCurrentChanges();
+                            }
+                            // Imported & Unchanged Mercenary - Delete
+                            if (_selectedMerc.isImportedMercenary && _selectedMerc.isOriginal)
+                            {
+                                if (System.Windows.MessageBox.Show(String.Format("{0} is an imported mercenary without any changes. Reverting now will delete this mercenary.\n\nAre you sure?", _selectedMerc.Name), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                                {
+                                    _loadedMercenaries.Remove(_selectedMerc);
+                                }
+                            }
+                        }
+                    }
+                    else if (lbCharacterList.SelectedItems.Count > 1)
+                    {
+                        SaveAllMercenaries(GetModifiedMercenaries());
+                    }
+                }
+                // Frankenstein Keybind
+                if (e.Key == Key.F && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    if (lbCharacterList.SelectedItems.Count > 0)
+                    {
+                        for (int i = 0; i < lbCharacterList.SelectedItems.Count; i++)
+                        {
+                            MercenaryItem _selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                            if (_selectedMerc != null)
+                            {
+                                _selectedMerc.Frankenstein();
+                            }
+                        }
+                    }
+                }
+                // Randomize Keybind
+                if (e.Key == Key.R && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    if (lbCharacterList.SelectedItems.Count > 0)
+                    {
+                        for (int i = 0; i < lbCharacterList.SelectedItems.Count; i++)
+                        {
+                            MercenaryItem _selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                            if (_selectedMerc != null)
+                            {
+                                _selectedMerc.Randomize();
+                            }
+                        }
+                    }
+                }
+                // Export Mercenary
+                if (e.Key == Key.E && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < lbCharacterList.SelectedItems.Count; i++)
+                    {
+                        MercenaryItem merc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                        if (merc != null)
+                        {
+                            sb.Append(String.Format("{0}{1}", merc.ToString(), (lbCharacterList.SelectedItems.Count > 1 && i != lbCharacterList.SelectedItems.Count - 1) ? "\n" : ""));
+                        }
+                    }
+                    System.Windows.Clipboard.SetText(sb.ToString());
+                }
+                // Import Mercenary
+                if (e.Key == Key.I && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    ImportWindow importer = new ImportWindow();
+                    if (importer.ShowDialog().Value)
+                    {
+                        //CheckForModifiedMercenaries();
+                    }
+                }
+                CheckForModifiedMercenaries();
+            }
         }
     }
 }

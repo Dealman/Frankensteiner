@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,9 +14,8 @@ namespace Frankensteiner
         private string configFile;
         private string fileContents;
         private List<string> parsedMercenaries = new List<string>();
-        private string parsedHordeMercenary;
 
-        public List<Mercenary> Mercenaries = new List<Mercenary>();
+        public List<MercenaryItem> Mercenaries = new List<MercenaryItem>();
 
         public ConfigParser(string configPath)
         {
@@ -59,10 +59,13 @@ namespace Frankensteiner
 
         public void ProcessMercenaries()
         {
+            int counter = 0;
             foreach(string parsedMercenary in parsedMercenaries)
             {
                 // Create a new mercenary
-                Mercenary mercenary = new Mercenary(parsedMercenary);
+                MercenaryItem mercenary = new MercenaryItem(parsedMercenary);
+                mercenary.index = counter;
+                counter++;
                 // Name + ItemText
                 Regex rx = new Regex("\"(.+)\""); // Use Regex to find the mercenary's name
                 mercenary.Name = rx.Match(parsedMercenary).Value.Replace("\"", ""); // Once found, remove the quotation marks - they were only used to help find the name
@@ -77,26 +80,26 @@ namespace Frankensteiner
                     mercenary.ItemText = mercenary.Name; // Set ItemText to be same as the name - this is what's actually shown in the ListBox
                     // Parse the Gear Customization
                     rx = new Regex(@"GearCustomization=\(.+\)\)\)");
-                    mercenary.Gear = rx.Match(parsedMercenary).Value;
+                    mercenary.GearString = rx.Match(parsedMercenary).Value;
                     // Parse the Appearance Customization
                     rx = new Regex(@"AppearanceCustomization=\(.+\),F");
-                    mercenary.Appearance = rx.Match(parsedMercenary).Value.Replace("),F", ")");
+                    mercenary.AppearanceString = rx.Match(parsedMercenary).Value.Replace("),F", ")");
                     // Parse the Face Customization
                     rx = new Regex(@"FaceCustomization=\(.+\)\),");
-                    mercenary.Face = rx.Match(parsedMercenary).Value.Replace(")),", "))");
+                    mercenary.FaceString = rx.Match(parsedMercenary).Value.Replace(")),", "))");
                     // Parse the Skills
                     rx = new Regex(@"SkillsCustomization=\(.+\)\)");
-                    mercenary.Skills = rx.Match(parsedMercenary).Value;
+                    mercenary.SkillString = rx.Match(parsedMercenary).Value;
                 } else {
                     mercenary.OriginalName = "Horde/BR";
                     mercenary.Name = "Horde/BR";
                     mercenary.ItemText = mercenary.Name;
                     // Parse the Face Customization
                     rx = new Regex(@"(DefaultCharacterFace=\(.+)");
-                    mercenary.Face = rx.Match(parsedMercenary).Value;
+                    mercenary.FaceString = rx.Match(parsedMercenary).Value;
                     mercenary.isHordeMercenary = true;
                 }
-                if(mercenary.ProcessFaceValues())
+                if(mercenary.ParseFaceValues())
                 {
                     Mercenaries.Add(mercenary);
                 } else {

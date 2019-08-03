@@ -6,6 +6,33 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Frankensteiner"
         mc:Ignorable="d"
-        Title="Compare Window" Height="450" Width="800" TitleCaps="False" WindowStartupLocation="CenterOwner">
-    <Grid Background="#FF272727"/>
+        Title="Compare Window (EXPERIMENTAL)" Height="400" Width="900" TitleCaps="False" WindowStartupLocation="CenterOwner">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button x:Name="bHowUse" Content="How to Use?" Click="BHowUse_Click" />
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout x:Name="flyoutHowUse" Header="How to Use" Position="Bottom" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Controls:FlyoutsControl}, Path=ActualHeight}">
+                <Grid>
+                    <TextBlock Margin="10,40,0,0" TextWrapping="Wrap"><Run Text="The list on the the "/><Run FontWeight="Bold" Text="left "/><Run Text="side contains mercenaries that can not be saved due to a conflict. These are the mercenaries that you have edited but not yet saved."/><LineBreak/><Run/><LineBreak/><Run Text="The list on the "/><Run FontWeight="Bold" Text="right"/><Run Text=" side contains the most recent mercenaries containing changes made by another source"/><Run FontStyle="Italic" Text="(most likely Mordhau if you had it running)"/><Run Text="."/><LineBreak/><Run/><LineBreak/><Run Text="In order to save the mercenaries you've made changes to - you need to choose which entry in the list to the right you want to replace in the config."/><LineBreak/><Run/><LineBreak/><Run Text="1. Select an entry in the list to the left."/><LineBreak/><Run Text="2. Select an entry in the list to the right."/><LineBreak/><Run Text="3. "/><Run Text="Press the replace button."/><LineBreak/><Run FontStyle="Italic" FontSize="10" Text="Make sure you've selected the right one, it can not be undone at the moment! If you made a mistake you can hit Cancel and re-do it."/><LineBreak/><Run Text="4. Once done replacing all the conflicts - the Save button will be enabled and you can save."/><LineBreak/><Run/><LineBreak/><Run Text="This is necessary because when the program tries to write to the config, it looks for the original entry to replace in the config - to minimize the chances of corrupting the config."/></TextBlock>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+    <Grid x:Name="gBackground">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <DataGrid x:Name="dgDummy" Visibility="Collapsed"/>
+        <ListBox x:Name="lbConflictedMercenaries" Margin="10,41,5,74" SelectionChanged="LbConflictedMercenaries_SelectionChanged" BorderThickness="2" BorderBrush="{Binding BorderBrush, ElementName=dgDummy}"/>
+        <ListBox x:Name="lbNewMercenaries" Grid.Column="1" Margin="5,41,10,74" SelectionChanged="LbNewMercenaries_SelectionChanged" BorderThickness="2" BorderBrush="{Binding BorderBrush, ElementName=dgDummy}"/>
+        <Button x:Name="bReplace" Content="Replace Selected Entries" Margin="10,0,10,42" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Controls:ControlsHelper.ContentCharacterCasing="Normal" IsEnabled="False" Click="BReplace_Click"/>
+        <Label Content="Unsaved Mercenaries" Margin="10,10,10,0" VerticalAlignment="Top" Width="376" HorizontalContentAlignment="Center" ToolTip="This list contains the mercenaries you have modified."/>
+        <Label Content="New Mercenaries" Grid.Column="1" Margin="10,10,10,0" VerticalAlignment="Top" Width="376" HorizontalContentAlignment="Center" ToolTip="This list contains the newly parsed mercenaries."/>
+        <Button x:Name="bSave" Content="Save" Margin="10,0,5,10" VerticalAlignment="Bottom" IsDefault="True" Click="BSave_Click" IsEnabled="False" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+        <Button x:Name="bCancel" Content="Cancel" Grid.Column="1" Margin="5,0,10,10" VerticalAlignment="Bottom" IsCancel="True" Click="BCancel_Click" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+    </Grid>
 </Controls:MetroWindow>

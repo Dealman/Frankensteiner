@@ -202,5 +202,41 @@ namespace Frankensteiner.Properties {
                 this["cfgConflictWarnings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool cfgRestartMordhau {
+            get {
+                return ((bool)(this["cfgRestartMordhau"]));
+            }
+            set {
+                this["cfgRestartMordhau"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool cfgRestartMordhauMode {
+            get {
+                return ((bool)(this["cfgRestartMordhauMode"]));
+            }
+            set {
+                this["cfgRestartMordhauMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool cfgShortcutsEnabled {
+            get {
+                return ((bool)(this["cfgShortcutsEnabled"]));
+            }
+            set {
+                this["cfgShortcutsEnabled"] = value;
+            }
+        }
     }
 }

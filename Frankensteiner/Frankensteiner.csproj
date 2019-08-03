@@ -64,9 +64,6 @@
     <Reference Include="Costura, Version=4.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.0.0\lib\net40\Costura.dll</HintPath>
     </Reference>
-    <Reference Include="Diff.Match.Patch, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Diff.Match.Patch.2.1.0\lib\net45\Diff.Match.Patch.dll</HintPath>
-    </Reference>
     <Reference Include="FontAwesome.Net, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesomeDotNet.1.1.1\lib\FontAwesome.Net.dll</HintPath>
     </Reference>
@@ -143,7 +140,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mercenary.cs" />
     <Compile Include="MercenaryEditor.xaml.cs">
       <DependentUpon>MercenaryEditor.xaml</DependentUpon>
     </Compile>

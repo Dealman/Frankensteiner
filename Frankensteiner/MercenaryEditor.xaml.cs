@@ -22,9 +22,9 @@ namespace Frankensteiner
     public partial class MercenaryEditor : MetroWindow
     {
         private ObservableCollection<FaceValueSliderItem> _sliders = new ObservableCollection<FaceValueSliderItem>();
-        private Mercenary mercenary;
+        private MercenaryItem mercenary;
 
-        public MercenaryEditor(Mercenary selectedMerc)
+        public MercenaryEditor(MercenaryItem selectedMerc)
         {
             InitializeComponent();
             mercenary = selectedMerc;
@@ -47,9 +47,9 @@ namespace Frankensteiner
             for (int i=0; i < 49; i++)
             {
                 var newSlider = new FaceValueSliderItem();
-                newSlider.Translation = selectedMerc.FaceValues[i];
-                newSlider.Rotation = selectedMerc.FaceValues[i+49];
-                newSlider.Scale = selectedMerc.FaceValues[i+98];
+                newSlider.Translation = selectedMerc.FaceValues[i].Translation;
+                newSlider.Rotation = selectedMerc.FaceValues[i].Rotation;
+                newSlider.Scale = selectedMerc.FaceValues[i].Scale;
                 newSlider.UpdateDescription(String.Format("{0}: Unknown Value", (i + 1)));
                 _sliders.Add(newSlider);
             }
@@ -114,9 +114,7 @@ namespace Frankensteiner
             for (int i = 0; i < _sliders.Count(); i++)
             {
                 var faceSlider = _sliders[i];
-                mercenary.FaceValues[i] = faceSlider.Translation;
-                mercenary.FaceValues[i+49] = faceSlider.Rotation;
-                mercenary.FaceValues[i+98] = faceSlider.Scale;
+                mercenary.FaceValues[i] = new MercenaryItem.FaceValue(Convert.ToUInt16(faceSlider.Translation), Convert.ToUInt16(faceSlider.Rotation), Convert.ToUInt16(faceSlider.Scale));
             }
 
             mercenary.Name = (!String.IsNullOrWhiteSpace(tbNewName.Text)) ? tbNewName.Text : mercenary.Name;
@@ -124,7 +122,7 @@ namespace Frankensteiner
             {
                 if (!mercenary.OriginalFaceValues.SequenceEqual(mercenary.FaceValues))
                 {
-                    mercenary.ItemText = (mercenary.importedMercenary) ? String.Format("[IMPORT] {0} - Unsaved Changes!", mercenary.OriginalName) : String.Format("{0} - Unsaved Changes!", mercenary.OriginalName);
+                    mercenary.ItemText = (mercenary.isImportedMercenary) ? String.Format("[IMPORT] {0} - Unsaved Changes!", mercenary.OriginalName) : String.Format("{0} - Unsaved Changes!", mercenary.OriginalName);
                     mercenary.isOriginal = false;
                     this.DialogResult = true;
                 } else {
@@ -133,7 +131,7 @@ namespace Frankensteiner
                     this.DialogResult = false;
                 }
             } else {
-                mercenary.ItemText = (mercenary.importedMercenary) ? String.Format("[IMPORT] {0} > {1} - Unsaved Changes!", mercenary.OriginalName, mercenary.Name) : String.Format("{0} > {1} - Unsaved Changes!", mercenary.OriginalName, mercenary.Name);
+                mercenary.ItemText = (mercenary.isImportedMercenary) ? String.Format("[IMPORT] {0} > {1} - Unsaved Changes!", mercenary.OriginalName, mercenary.Name) : String.Format("{0} > {1} - Unsaved Changes!", mercenary.OriginalName, mercenary.Name);
                 mercenary.isOriginal = false;
                 this.DialogResult = true;
             }

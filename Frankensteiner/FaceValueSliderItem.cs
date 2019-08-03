@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Frankensteiner
 {
@@ -46,6 +47,19 @@ namespace Frankensteiner
                 {
                     _scale = value;
                     OnPropertyChanged(nameof(Scale));
+                }
+            }
+        }
+        private SolidColorBrush _bg = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+        public SolidColorBrush BackgroundColour
+        {
+            get { return _bg; }
+            set
+            {
+                if(value != _bg)
+                {
+                    _bg = value;
+                    OnPropertyChanged(nameof(BackgroundColour));
                 }
             }
         }

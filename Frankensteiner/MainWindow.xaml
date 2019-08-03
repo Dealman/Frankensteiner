@@ -13,8 +13,9 @@
     </Controls:MetroWindow.Resources>
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Reddit"/>
+            <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Reddit" Click="BReddit_Click"/>
             <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github_alt}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="GitHub" Click="BGithub_Click"/>
+            <Button x:Name="bTitleSave" Visibility="Collapsed" Content="Save Mercenaries" Click="BTitleSave_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid x:Name="gWindowBG" Background="#FF454545">
@@ -22,27 +23,28 @@
             <TabItem Header="Mercenaries">
                 <Grid x:Name="gMainBG" Background="#FF454545">
                     <Grid Margin="0,0,0,0">
-                        <ListBox x:Name="lbCharacterList" MouseDoubleClick="LbCharacterList_MouseDoubleClick" AlternationCount="2" Margin="10,10,10,42" IsEnabled="False">
+                        <ListBox x:Name="lbCharacterList" MouseDoubleClick="LbCharacterList_MouseDoubleClick" AlternationCount="2" Margin="10,10,10,42" IsEnabled="False" SelectionMode="Extended" BorderThickness="2" BorderBrush="{Binding BorderBrush, ElementName=dgDummy}" KeyUp="LbCharacterList_KeyUp">
                             <ListBox.ContextMenu>
                                 <ContextMenu x:Name="lbContextMenu" Opened="lbContextMenu_Opened">
-                                    <MenuItem x:Name="lbContextEdit" Header="Edit Mercenary" IsEnabled="False" FontSize="12" Click="LbContextEdit_Click"/>
+                                    <MenuItem x:Name="lbContextEdit" Header="Edit Mercenary" IsEnabled="False" FontSize="12">
+                                        <MenuItem x:Name="lbContextQuickEdit" Header="Open in Mercenary Editor" Click="LbContextQuickEdit_Click"/>
+                                        <Separator/>
+                                        <MenuItem x:Name="lbContextQuickFrankenstein" Header="Frankenstein" Click="LbContextQuickFrankenstein_Click"/>
+                                        <MenuItem x:Name="lbContextQuickRandomize" Header="Randomize" Click="LbContextQuickRandomize_Click"/>
+                                    </MenuItem>
                                     <MenuItem x:Name="lbContextSave" Header="Save Changes to Mercenary" IsEnabled="False" FontSize="12" Click="LbContextSave_Click"/>
                                     <MenuItem x:Name="lbContextRevert" Header="Revert Changes to Mercenary" IsEnabled="False" FontSize="12" Click="LbContextRevert_Click"/>
-                                    <MenuItem x:Name="lbContextDelete" Header="Delete Imported Mercenary" Visibility="Collapsed" FontSize="12" Click="LbContextDelete_Click"/>
                                     <Separator/>
                                     <MenuItem x:Name="lbContextExport" Header="Export Mercenary to Clipboard" IsEnabled="False" FontSize="12" Click="LbContextExport_Click"/>
                                     <MenuItem x:Name="lbContextImport" Header="Import New Mercenary" FontSize="12" Click="LbContextImport_Click"/>
-                                    <Separator/>
-                                    <MenuItem x:Name="lbContextSaveAll" Header="Save All" IsEnabled="False" FontSize="12" Click="LbContextSaveAll_Click"/>
-                                    <MenuItem x:Name="lbContextRevertAll" Header="Revert All" IsEnabled="False" FontSize="12" Click="LbContextRevertAll_Click"/>
                                 </ContextMenu>
                             </ListBox.ContextMenu>
                             <ListBox.Resources>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MetroListBoxItem}">
-                                    <Setter Property="Content" Value="{Binding ItemText}"/>
+                                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MetroListBoxItem}">
+                                    <Setter Property="Content" Value="{Binding Path=ItemText, UpdateSourceTrigger=PropertyChanged}"/>
                                     <Style.Triggers>
                                         <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                            <Setter Property="Background" Value="{Binding BackgroundColor}"/>
+                                            <Setter Property="Background" Value="{Binding Path=BackgroundColour, UpdateSourceTrigger=PropertyChanged}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -55,6 +57,8 @@
                             </Grid.ColumnDefinitions>
                         </Grid>
                         <Button x:Name="bRefreshCharacters" Content="Refresh" Margin="10,0,10,10" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BRefreshCharacters_Click" IsEnabled="False"/>
+                        <!-- For some reason ListBox doesn't automagically set the BorderBrush to the same as the app's accent. So we use the one below to bind it. -->
+                        <DataGrid x:Name="dgDummy" Visibility="Collapsed"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -67,11 +71,13 @@
                                 <TextBox x:Name="tbConfigPath" Margin="10,41,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Game.ini..." MinWidth="440" IsReadOnly="True" TextChanged="TbConfigPath_TextChanged" MinHeight="27"/>
                                 <Button x:Name="bBrowseConfigPath" Content="..." Margin="0,41,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" HorizontalAlignment="Right" Click="BBrowseConfigPath_Click" MinWidth="20" MinHeight="27" MouseRightButtonUp="BBrowseConfigPath_MouseRightButtonUp" ToolTip="Left-click to choose folder. Right-click to open the folder if one has been selected."/>
                                 <Label Content="Mordhau Path" Margin="10,96,10,0" VerticalAlignment="Top" Width="520" HorizontalContentAlignment="Center" ToolTip="This is used to disable startup movies. Can be ignored if wanted."/>
-                                <TextBox x:Name="tbMordhauPath" Margin="10,127,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Mordhau Folder..." MinWidth="440" IsReadOnly="True" MinHeight="27"/>
+                                <TextBox x:Name="tbMordhauPath" Margin="10,127,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Mordhau Folder..." MinWidth="440" IsReadOnly="True" MinHeight="27" TextChanged="TbMordhauPath_TextChanged"/>
                                 <Button x:Name="bBrowseMordhauPath" Content="..." HorizontalAlignment="Right" Margin="0,127,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" MinWidth="20" Click="BBrowseMordhauPath_Click" MinHeight="27" MouseRightButtonUp="BBrowseMordhauPath_MouseRightButtonUp" ToolTip="Left-click to choose folder. Right-click to open the folder if one has been selected."/>
                                 <CheckBox x:Name="cbCheckConflicts" Content="Automatically Check for Conflicts" Margin="10,73,10,0" VerticalAlignment="Top" Click="CbCheckConflicts_Click"/>
-                                <CheckBox x:Name="cbAutoCloseGame" Content="Automatically Restart Mordhau When Saving" Margin="10,159,10,0" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" Click="CbAutoCloseGame_Click"/>
-                                <CheckBox x:Name="cbDisableMovies" Content="Disable Startup Movies" Margin="10,182,10,0" VerticalAlignment="Top" Click="CbDisableMovies_Click"/>
+                                <CheckBox x:Name="cbAutoCloseGame" Content="Automatically Close Mordhau Before Saving" Margin="10,159,10,0" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" Click="CbAutoCloseGame_Click" IsEnabled="False"/>
+                                <CheckBox x:Name="cbDisableMovies" Content="Disable Startup Movies" Margin="10,232,10,0" VerticalAlignment="Top" Click="CbDisableMovies_Click" IsEnabled="False"/>
+                                <CheckBox x:Name="cbRestartMordhau" Content="Automatically Start Mordhau After Saving" Margin="32,182,10,0" VerticalAlignment="Top" Click="CbRestartMordhau_Click" IsEnabled="{Binding IsChecked, ElementName=cbAutoCloseGame}" IsChecked="True"/>
+                                <CheckBox x:Name="cbRestartMordhauMode" Content="But Only if Mordhau Was Already Running" Margin="52,205,10,0" VerticalAlignment="Top" Click="CbRestartMordhauMode_Click" IsEnabled="{Binding IsChecked, ElementName=cbRestartMordhau}" IsChecked="True"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="Backups">
@@ -124,6 +130,7 @@
                                     <ComboBoxItem Content="Sienna"/>
                                 </ComboBox>
                                 <CheckBox x:Name="cbConflictWarnings" Content="Display Conflict Warnings" Margin="10,134,0,0" VerticalAlignment="Top" IsChecked="True" Click="CbConflictWarnings_Click"/>
+                                <CheckBox x:Name="cbShortcutKeys" Content="Enable Mercenary List Shortcut Keys" Margin="10,157,10,0" VerticalAlignment="Top" Click="CbShortcutKeys_Click"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -136,15 +143,9 @@
                             <Paragraph TextAlignment="Center">
                                 <Run BaselineAlignment="Center" FontWeight="Bold" Text="Frankensteiner"/>
                                 <LineBreak/>
-                                <Run x:Name="runVersion" FontStyle="Italic" Text=""/>
-                                <LineBreak/>
-                                <Run/>
+                                <Run x:Name="runVersion" Text=""/>
                                 <LineBreak/>
                                 <Run Text="This is a program that lets you customize the facial appearance of mercenaries in Mordhau beyond the game's typical limits. Typically, every face is symmetrical - to avoid horrible mostrosities from being made."/>
-                                <LineBreak/>
-                                <Run/>
-                                <LineBreak/>
-                                <Run Text="...Or so they thought."/>
                             </Paragraph>
                             <Paragraph TextAlignment="Center">
                                 <Run FontWeight="Bold" Text="Some Tips:"/>
@@ -159,12 +160,13 @@
                                 <LineBreak/>
                                 <Run Text="• Disable startup movies to load into the game a bit faster if you find yourself restart a lot."/>
                                 <LineBreak/>
-                                <Run Text="• Report any bugs you encounter, pls."/>
+                                <Run Text="• Enable shortcut keybinds in the Settings"/>
+                                <LineBreak/>
+                                <Run Text="• You can select multiple mercenaries!"/>
                                 <LineBreak/>
                                 <Run Text="• Support Triternion, they're awesome! No seriously, they are. It literally says so on their website."/>
                                 <LineBreak/>
                                 <Run Text="• If you're a better programmer than me, which you probably are - you can help improve this program via GitHub."/>
-                                <Run Text=" "/>
                                 <InlineUIContainer>
                                     <Separator
                     />
