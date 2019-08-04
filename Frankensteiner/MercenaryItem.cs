@@ -329,7 +329,7 @@ namespace Frankensteiner
         }
         public void Frankenstein()
         {
-            Random rnd = new Random();
+            Random rnd = new Random(Guid.NewGuid().GetHashCode());
             for(int i=0; i < FaceValues.Count; i++)
             {
                 FaceValues[i] = new FaceValue((ushort)(rnd.Next(0, 2) == 1 ? 0 : 65535), (ushort)(rnd.Next(0, 2) == 1 ? 0 : 65535), (ushort)(rnd.Next(0, 2) == 1 ? 0 : 65535));
@@ -339,7 +339,7 @@ namespace Frankensteiner
         }
         public void Randomize()
         {
-            Random rnd = new Random();
+            Random rnd = new Random(Guid.NewGuid().GetHashCode());
             for(int i=0; i < FaceValues.Count; i++)
             {
                 FaceValues[i] = new FaceValue((ushort)rnd.Next(0, 65535), (ushort)rnd.Next(0, 65535), (ushort)rnd.Next(0, 65535));
