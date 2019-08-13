@@ -1106,6 +1106,11 @@ namespace Frankensteiner
                         }
                     }
                 }
+                // Select All Keybind
+                if(e.Key == Key.A && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    lbCharacterList.SelectAll();
+                }
                 // Save Keybind
                 if (e.Key == Key.S && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
                 {
