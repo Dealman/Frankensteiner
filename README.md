@@ -35,6 +35,8 @@ Under Settings you can enable shortcuts, this is useful for when you wanna make 
 | CTRL+I | Import Mercenary | N/A                    |
 | CTRL+R | Randomize | Yes                           |
 | CTRL+F | Frankenstein | Yes                        |
+| CTRL+C | Copy Face Values | No                     |
+| CTRL+V | Paste Face Values | Yes                    |
 
 ### Conflicts
 It is recommended that you do not have Mordhau running as you're using this program. Or at the very least, do not idle in the customization menu - since Mordhau will write to the config every single time you make even the tiniest of change. Or else it's very likely there will be conflicts when trying to save **your** changes.
