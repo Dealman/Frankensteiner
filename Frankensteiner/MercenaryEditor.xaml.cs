@@ -122,17 +122,17 @@ namespace Frankensteiner
             {
                 if (!mercenary.OriginalFaceValues.SequenceEqual(mercenary.FaceValues))
                 {
-                    mercenary.ItemText = (mercenary.isImportedMercenary) ? String.Format("[IMPORT] {0} - Unsaved Changes!", mercenary.OriginalName) : String.Format("{0} - Unsaved Changes!", mercenary.OriginalName);
                     mercenary.isOriginal = false;
+                    mercenary.UpdateItemText();
                     this.DialogResult = true;
                 } else {
-                    mercenary.ItemText = mercenary.Name;
+                    mercenary.UpdateItemText();
                     mercenary.isOriginal = true;
                     this.DialogResult = false;
                 }
             } else {
-                mercenary.ItemText = (mercenary.isImportedMercenary) ? String.Format("[IMPORT] {0} > {1} - Unsaved Changes!", mercenary.OriginalName, mercenary.Name) : String.Format("{0} > {1} - Unsaved Changes!", mercenary.OriginalName, mercenary.Name);
                 mercenary.isOriginal = false;
+                mercenary.UpdateItemText();
                 this.DialogResult = true;
             }
         }

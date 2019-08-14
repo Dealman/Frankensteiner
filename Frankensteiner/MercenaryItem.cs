@@ -211,8 +211,10 @@ namespace Frankensteiner
         // Logic Fields
         public int index = 0;
         public bool isImportedMercenary = false;
+        public bool isNewMercenary = false;
         public bool isHordeMercenary = false;
         public bool isOriginal = true;
+        public bool isBeingDeleted = false;
 
         public MercenaryItem()
         {
@@ -253,6 +255,7 @@ namespace Frankensteiner
                     if (!String.IsNullOrWhiteSpace(Name))
                     {
                         OriginalName = Name;
+                        ItemText = Name;
                         rx = new Regex(@"GearCustomization=\(.+\)\)\)");
                         GearString = rx.Match(OriginalEntry).Value;
                         rx = new Regex(@"AppearanceCustomization=\(.+\),F");
@@ -290,42 +293,76 @@ namespace Frankensteiner
                         return false;
                     }
                 }
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 return false;
+            }
+        }
+        public void UpdateItemText()
+        {
+            // Imported Mercenaries
+            if(isImportedMercenary)
+            {
+                if (isOriginal)
+                {
+                    ItemText = String.Format("{0} - Imported Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                } else {
+                    ItemText = String.Format("{0} - Imported & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                }
+            }
+            // New Mercenaries
+            if (isNewMercenary)
+            {
+                if (isOriginal)
+                {
+                    ItemText = String.Format("{0} - New Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                } else {
+                    ItemText = String.Format("{0} - New & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                }
+            }
+            // Horde/BR Mercenary
+            if (isHordeMercenary)
+            {
+                if (isOriginal)
+                {
+                    ItemText = String.Format("{0}", Name);
+                } else {
+                    ItemText = String.Format("{0} - Modified Mercenary - UNSAVED", Name);
+                }
+            }
+            // Normal
+            if(!isImportedMercenary && !isNewMercenary && !isHordeMercenary)
+            {
+                if (isOriginal)
+                {
+                    ItemText = String.Format("{0}", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                } else {
+                    ItemText = String.Format("{0} - Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                }
+            }
+            // Deletion
+            if(isBeingDeleted)
+            {
+                ItemText = String.Format("{0} - MARKED FOR DELETION", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
             }
         }
         public void SetAsOriginal()
         {
             OriginalName = Name;
-            ItemText = Name;
             OriginalEntry = ToString();
             OriginalFaceValues.Clear();
             OriginalFaceValues.AddRange(FaceValues);
-            SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-            BackgroundColour = newColor;
             isImportedMercenary = false;
+            isNewMercenary = false;
             isOriginal = true;
+            UpdateItemText();
         }
         public void RevertCurrentChanges()
         {
-            if (!isImportedMercenary)
-            {
-                Name = OriginalName;
-                ItemText = Name;
-                FaceValues = OriginalFaceValues;
-                SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                BackgroundColour = newColor;
-                isOriginal = true;
-            } else {
-                Name = OriginalName;
-                ItemText = String.Format("{0} - Unsaved Imported Mercenary", OriginalName);
-                FaceValues = OriginalFaceValues;
-                SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                BackgroundColour = newColor;
-                isOriginal = true;
-            }
+            Name = OriginalName;
+            FaceValues = OriginalFaceValues;
+            isBeingDeleted = false;
+            isOriginal = true;
+            UpdateItemText();
         }
         public void Frankenstein()
         {
@@ -334,8 +371,8 @@ namespace Frankensteiner
             {
                 FaceValues[i] = new FaceValue((ushort)(rnd.Next(0, 2) == 1 ? 0 : 65535), (ushort)(rnd.Next(0, 2) == 1 ? 0 : 65535), (ushort)(rnd.Next(0, 2) == 1 ? 0 : 65535));
             }
-            ItemText = String.Format("{0} - Unsaved Changes", Name);
             isOriginal = false;
+            UpdateItemText();
         }
         public void Randomize()
         {
@@ -344,8 +381,8 @@ namespace Frankensteiner
             {
                 FaceValues[i] = new FaceValue((ushort)rnd.Next(0, 65535), (ushort)rnd.Next(0, 65535), (ushort)rnd.Next(0, 65535));
             }
-            ItemText = String.Format("{0} - Unsaved Changes", Name);
             isOriginal = false;
+            UpdateItemText();
         }
 
         public override string ToString()

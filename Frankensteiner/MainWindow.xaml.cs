@@ -35,6 +35,7 @@ namespace Frankensteiner
         private string gameConfigPath;
         private ConfigParser config;
         private ObservableCollection<MercenaryItem> _loadedMercenaries = new ObservableCollection<MercenaryItem>();
+        private MercenaryItem _copiedMercenary;
         private bool changeDetected = false;
 
         public MainWindow()
@@ -210,6 +211,7 @@ namespace Frankensteiner
             Properties.Settings.Default.Save();
         }
         #endregion
+
         #region Mercenary List Logic
         private void BRefreshCharacters_Click(object sender, RoutedEventArgs e)
         {
@@ -229,12 +231,17 @@ namespace Frankensteiner
                         {
                             _loadedMercenaries.Add(config.Mercenaries[i]);
                         }
-                        foreach (MercenaryItem mercenary in _loadedMercenaries)
+                        for(int i=0; i < _loadedMercenaries.Count; i++)
                         {
-                            SolidColorBrush newColor = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                            mercenary.BackgroundColour = newColor;
+                            if(i%2 == 0)
+                            {
+                                _loadedMercenaries[i].BackgroundColour = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
+                            } else {
+                                _loadedMercenaries[i].BackgroundColour = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(49, 49, 49)) : new SolidColorBrush(Color.FromRgb(225, 225, 225));
+                            }
                         }
                         lbCharacterList.IsEnabled = true;
+                        bShowTools.IsEnabled = true;
                     }
                 }
             } catch (Exception eggseption) {
@@ -332,7 +339,7 @@ namespace Frankensteiner
             {
                 for(int i=0; i < _loadedMercenaries.Count; i++)
                 {
-                    if(!_loadedMercenaries[i].isOriginal || _loadedMercenaries[i].isImportedMercenary)
+                    if(!_loadedMercenaries[i].isOriginal || _loadedMercenaries[i].isImportedMercenary || _loadedMercenaries[i].isBeingDeleted)
                     {
                         _modifiedMercs.Add(_loadedMercenaries[i]);
                     }
@@ -384,6 +391,7 @@ namespace Frankensteiner
             List<MercenaryItem> _invalidMercs = new List<MercenaryItem>();
             List<MercenaryItem> _importedMercs = new List<MercenaryItem>();
             List<MercenaryItem> _failedToSave = new List<MercenaryItem>();
+            List<MercenaryItem> _deleteMercs = new List<MercenaryItem>();
             bool wasMordhauKilled = false;
 
             #region Auto Close Mordhau Check
@@ -406,10 +414,33 @@ namespace Frankensteiner
             }
             #endregion
 
+            #region Fetch To-Be-Deleted Mercenaries
+            for (int i=0; i < _modifiedMercs.Count; i++)
+            {
+                if(_modifiedMercs[i].isBeingDeleted)
+                {
+                    _deleteMercs.Add(_modifiedMercs[i]);
+                }
+            }
+
+            if(_deleteMercs.Count > 0)
+            {
+                if(System.Windows.MessageBox.Show(String.Format("Warning!\n\nThese mercenaries will be deleted:\n{0}\n\nThis action can not be undone! Are you sure you want to proceed?", string.Join("\n", _deleteMercs.Select(x => x.Name).ToArray())), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    for (int i = 0; i < _deleteMercs.Count; i++)
+                    {
+                        _modifiedMercs.Remove(_deleteMercs[i]);
+                    }
+                } else {
+                    return;
+                }
+            }
+            #endregion
+
             #region Fetch Imported Mercenaries
             for (int i = 0; i < _modifiedMercs.Count; i++)
             {
-                if(_modifiedMercs[i].isImportedMercenary)
+                if(_modifiedMercs[i].isImportedMercenary || _modifiedMercs[i].isNewMercenary)
                 {
                     _importedMercs.Add(_modifiedMercs[i]);
                 }
@@ -497,6 +528,25 @@ namespace Frankensteiner
                     System.Windows.MessageBox.Show("Something went wrong when trying to save imported mercenaries.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
+            // Deletes
+            if(_deleteMercs.Count > 0)
+            {
+                for (int i = 0; i < _deleteMercs.Count; i++)
+                {
+                    if (configContents.Contains(_deleteMercs[i].OriginalEntry))
+                    {
+                        configContents = configContents.Remove(configContents.IndexOf(_deleteMercs[i].OriginalEntry), _deleteMercs[i].OriginalEntry.Length+1);
+                        _loadedMercenaries.Remove(_deleteMercs[i]);
+                    } else {
+                        if(_deleteMercs[i].isNewMercenary)
+                        {
+                            _loadedMercenaries.Remove(_deleteMercs[i]);
+                        } else {
+                            System.Windows.MessageBox.Show(String.Format("Unable to delete mercenary {0}. Original entry was not found in the config!", _deleteMercs[i].Name), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+            }
             #endregion
 
             #region Create Backup(s) Before Writing
@@ -505,10 +555,15 @@ namespace Frankensteiner
             #endregion
 
             #region Write to Config
-            if(_validMercs.Count > 0)
+            if(_validMercs.Count > 0 || _deleteMercs.Count > 0)
             {
                 File.WriteAllText(gameConfigPath, configContents);
-                System.Windows.MessageBox.Show(String.Format("Successfully saved these mercenaries:\n\n{0}", string.Join("\n", _validMercs.Select(x => x.Name).ToArray())), "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                if(_validMercs.Count > 0 && _deleteMercs.Count == 0)
+                {
+                    System.Windows.MessageBox.Show(String.Format("Successfully saved these mercenaries:\n\n{0}", string.Join("\n", _validMercs.Select(x => x.Name).ToArray())), "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                } else if(_validMercs.Count == 0 && _deleteMercs.Count > 0) {
+                    System.Windows.MessageBox.Show(String.Format("Successfully deleted these mercenaries:\n\n{0}", string.Join("\n", _deleteMercs.Select(x => x.Name).ToArray())), "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
                 bTitleSave.Visibility = Visibility.Collapsed;
             }
             #endregion
@@ -565,10 +620,11 @@ namespace Frankensteiner
                     }
                 } else {
                     _loadedMercenaries.Insert(0, importedMerc);
+                    importedMerc.index = _loadedMercenaries.Count + 1;
                 }
+                importedMerc.UpdateItemText();
             }
         }
-
         private void ToggleStartupMovies(bool toggle)
         {
             if(!String.IsNullOrWhiteSpace(tbMordhauPath.Text))
@@ -617,7 +673,6 @@ namespace Frankensteiner
                 System.Windows.MessageBox.Show("Failed to disable Mordhau startup movies - path to Mordhau has not been set.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-
         private bool IsMordhauRunning()
         {
             try
@@ -633,7 +688,6 @@ namespace Frankensteiner
                 return false;
             }
         }
-
         private void KillMordhau()
         {
             try
@@ -652,9 +706,9 @@ namespace Frankensteiner
         {
             if(_loadedMercenaries.Count > 0)
             {
-                for(int i=0; i < _loadedMercenaries.Count; i++)
+                for (int i = 0; i < _loadedMercenaries.Count; i++)
                 {
-                    if(!_loadedMercenaries[i].isOriginal || _loadedMercenaries[i].isImportedMercenary)
+                    if (!_loadedMercenaries[i].isOriginal || _loadedMercenaries[i].isImportedMercenary || _loadedMercenaries[i].isNewMercenary || _loadedMercenaries[i].isBeingDeleted)
                     {
                         bTitleSave.Visibility = Visibility.Visible;
                         changeDetected = true;
@@ -663,6 +717,41 @@ namespace Frankensteiner
                         bTitleSave.Visibility = Visibility.Collapsed;
                         changeDetected = false;
                     }
+                }
+            }
+        }
+        private void CreateMercenary(string name, int faceType, bool isMassCreation)
+        {
+            // TODO: Maybe prevent duplicate names. Mordhau still loads duplicates, however.
+            if (!String.IsNullOrWhiteSpace(name))
+            {
+                // 0 = Default, 1 = Random, 2 = Frankenstein
+                string defaultCode = String.Format("CharacterProfiles=(Name=INVTEXT(\"{0}\"),GearCustomization=(Wearables=((),(),(ID=30),(),(),(),(),(ID=15),(ID=8)),Equipment=((),(),())),AppearanceCustomization=(Emblem=0,EmblemColors=(0,0),MetalRoughnessScale=0,MetalTint=0,Age=0,Voice=2,VoicePitch=157,bIsFemale=False,Fat=85,Skinny=85,Strong=85,SkinColor=0,Face=0,EyeColor=0,HairColor=0,Hair=0,FacialHair=0,Eyebrows=0),FaceCustomization=(Translate=(15360,15360,15840,12656,15364,12653,15862,0,15385,0,16320,15847,15855,15855,384,8690,8683,480,480,480,31700,480,480,480,15360,15840,18144,15840,31690,15850,15860,11471,11471,12463,12463,11471,11471,15840,15840,0,0,0,0,0,0,0,0,7665,7660),Rotate=(0,0,0,0,0,0,16,0,0,0,0,14,0,0,12288,591,367,0,15855,15855,18976,0,0,0,0,18432,0,0,18816,0,0,0,0,0,0,0,0,655,335,0,0,15840,15840,0,0,15840,15840,0,0),Scale=(14351,14351,0,15360,0,15360,0,15855,0,15855,14336,0,0,0,14350,0,0,15855,15855,15855,15840,0,15855,15855,0,15914,6,0,15840,0,0,0,0,0,0,0,0,15855,15855,0,0,0,0,0,0,0,0,0,0)),SkillsCustomization=(Perks=0))", name);
+                MercenaryItem newMercenary = new MercenaryItem(defaultCode);
+                if (newMercenary.ValidateMercenaryCode())
+                {
+                    if (faceType == 1)
+                    {
+                        newMercenary.Randomize();
+                    }
+                    else if (faceType == 2)
+                    {
+                        newMercenary.Frankenstein();
+                    }
+                    newMercenary.index = _loadedMercenaries.Count + 1;
+                    newMercenary.isNewMercenary = true;
+                    newMercenary.UpdateItemText();
+                    _loadedMercenaries.Insert(0, newMercenary);
+                    tbMercenaryName.Text = "";
+                    if (!isMassCreation)
+                    {
+                        System.Windows.MessageBox.Show(String.Format("Successfully created mercenary {0}", newMercenary.Name), "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    CheckForModifiedMercenaries();
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Failed to parse face values. Could not create new mercenary!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }
@@ -794,6 +883,17 @@ namespace Frankensteiner
                 cbDisableMovies.IsEnabled = true;
             }
         }
+        private void TbMercenaryName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!String.IsNullOrWhiteSpace(tbMercenaryName.Text))
+            {
+                bCreateMercenary.IsEnabled = true;
+            }
+            else
+            {
+                bCreateMercenary.IsEnabled = false;
+            }
+        }
         #endregion
 
         #region Right-Click Events for Browse Buttons (Opens Folder)
@@ -914,7 +1014,18 @@ namespace Frankensteiner
                         UpdateContextItem(lbContextRevert, String.Format("Revert {0}", selectedMerc.Name), changedOrImported);
                         // Export
                         UpdateContextItem(lbContextExport, String.Format("Export {0} to Clipboard", selectedMerc.Name), true);
+                        // Copy Face
+                        UpdateContextItem(lbContextCopyFace, String.Format("Copy Face Values from {0}", selectedMerc.Name), true);
+                        // Paste Face
+                        if(selectedMerc != _copiedMercenary && _copiedMercenary != null)
+                        {
+                            UpdateContextItem(lbContextPasteFace, String.Format("Paste Face Values From {0} to {1}", _copiedMercenary.Name, selectedMerc.Name), true);
+                        } else {
+                            UpdateContextItem(lbContextPasteFace, String.Format("No Copied Face Values to Paste", selectedMerc.Name), false);
+                        }
                         // Delete
+                        UpdateContextItem(lbContextDelete, String.Format("Mark {0} for Deletion", selectedMerc.Name), true);
+
                         //TODO: Replace with Revert - alert user before
                         //UpdateContextItem(lbContextDelete, String.Format("Delete {0}", selectedMerc.Name), selectedMerc.importedMercenary, Visibility.Visible);
                     }
@@ -946,6 +1057,12 @@ namespace Frankensteiner
                     UpdateContextItem(lbContextRevert, "Revert (Multiple Selected)", changesDetected);
                     // Export
                     UpdateContextItem(lbContextExport, "Export Selected Mercenaries to Clipboard", true);
+                    // Copy Face
+                    UpdateContextItem(lbContextCopyFace, "Copy Face Values from (Multiple Selected)", false);
+                    // Paste Face
+                    UpdateContextItem(lbContextPasteFace, "Paste Face Values to (Multiple Selected)", true);
+                    // Delete
+                    UpdateContextItem(lbContextDelete, "Mark for Deletion (Multiple Selected)", true);
                 }
             }
         }
@@ -1002,15 +1119,6 @@ namespace Frankensteiner
             }
             System.Windows.Clipboard.SetText(sb.ToString());
         }
-        // Context Option: Import
-        private void LbContextImport_Click(object sender, RoutedEventArgs e)
-        {
-            ImportWindow importer = new ImportWindow();
-            if(importer.ShowDialog().Value)
-            {
-                CheckForModifiedMercenaries();
-            }
-        }
         // Context Option: Quick Edit
         private void LbContextQuickEdit_Click(object sender, RoutedEventArgs e)
         {
@@ -1051,6 +1159,44 @@ namespace Frankensteiner
             }
             CheckForModifiedMercenaries();
         }
+        // Context Option: Copy Face
+        private void LbContextCopyFace_Click(object sender, RoutedEventArgs e)
+        {
+            MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+            if (selectedMerc != null)
+            {
+                _copiedMercenary = selectedMerc;
+            }
+        }
+        // Context Option: Paste Face
+        private void LbContextPasteFace_Click(object sender, RoutedEventArgs e)
+        {
+            for(int i=0; i < lbCharacterList.SelectedItems.Count; i++)
+            {
+                MercenaryItem selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                if(selectedMerc != null && _copiedMercenary != null)
+                {
+                    selectedMerc.FaceValues = _copiedMercenary.FaceValues;
+                    selectedMerc.isOriginal = false;
+                    selectedMerc.UpdateItemText();
+                }
+            }
+            CheckForModifiedMercenaries();
+        }
+        // Context Option: Delete
+        private void LbContextDelete_Click(object sender, RoutedEventArgs e)
+        {
+            for(int i=0; i < lbCharacterList.SelectedItems.Count; i++)
+            {
+                MercenaryItem selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                if(selectedMerc != null)
+                {
+                    selectedMerc.isBeingDeleted = true;
+                    selectedMerc.UpdateItemText();
+                }
+            }
+            CheckForModifiedMercenaries();
+        }
         #endregion
 
         #region Button Events
@@ -1082,6 +1228,53 @@ namespace Frankensteiner
                 // Shouldn't be possible to reach this, but leave a message just in case.
                 System.Windows.MessageBox.Show("Something went wrong! No modified mercenaries were found - unable to save.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        private void BImportSingle_Click(object sender, RoutedEventArgs e)
+        {
+            ImportWindow importer = new ImportWindow();
+            if (importer.ShowDialog().Value)
+            {
+                CheckForModifiedMercenaries();
+            }
+        }
+        private void BShowTools_Click(object sender, RoutedEventArgs e)
+        {
+            toolsFlyout.IsOpen = true;
+        }
+        private void BCreateMercenary_Click(object sender, RoutedEventArgs e)
+        {
+            int faceType = 0;
+            if (rbMassRandom.IsChecked.Value)
+            {
+                faceType = 1;
+            }
+            else if (rbMassFrankenstein.IsChecked.Value)
+            {
+                faceType = 2;
+            }
+            CreateMercenary(tbMercenaryName.Text, faceType, false);
+        }
+        private void BMassCreate_Click(object sender, RoutedEventArgs e)
+        {
+            int faceType = 0;
+            if (rbMassRandom.IsChecked.Value)
+            {
+                faceType = 1;
+            }
+            else if (rbMassFrankenstein.IsChecked.Value)
+            {
+                faceType = 2;
+            }
+
+            for (int i = (int)nudMassNumber.Value; i > 0; i--)
+            {
+                CreateMercenary(String.Format("MassCreation {0}", (i)), faceType, true);
+            }
+            System.Windows.MessageBox.Show(String.Format("Successfully mass created {0} mercenaries!", nudMassNumber.Value), "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void BImportMultiple_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement. Remember to enable once implemented!
         }
         #endregion
 
@@ -1208,6 +1401,30 @@ namespace Frankensteiner
                     {
                         //CheckForModifiedMercenaries();
                     }
+                }
+                // Copy Face Values
+                if(e.Key == Key.C && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+                    if (selectedMerc != null)
+                    {
+                        _copiedMercenary = selectedMerc;
+                    }
+                }
+                // Paste Face Values
+                if (e.Key == Key.V && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                {
+                    for (int i = 0; i < lbCharacterList.SelectedItems.Count; i++)
+                    {
+                        MercenaryItem selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
+                        if (selectedMerc != null && _copiedMercenary != null)
+                        {
+                            selectedMerc.FaceValues = _copiedMercenary.FaceValues;
+                            selectedMerc.isOriginal = false;
+                            selectedMerc.UpdateItemText();
+                        }
+                    }
+                    CheckForModifiedMercenaries();
                 }
                 CheckForModifiedMercenaries();
             }
