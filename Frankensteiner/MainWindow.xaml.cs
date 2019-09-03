@@ -1016,6 +1016,7 @@ namespace Frankensteiner
                         UpdateContextItem(lbContextExport, String.Format("Export {0} to Clipboard", selectedMerc.Name), true);
                         // Copy Face
                         UpdateContextItem(lbContextCopyFace, String.Format("Copy Face Values from {0}", selectedMerc.Name), true);
+                        UpdateContextItem(lbContextCopyFormat, "Copy as Horde/BR Format", true);
                         // Paste Face
                         if(selectedMerc != _copiedMercenary && _copiedMercenary != null)
                         {
@@ -1194,6 +1195,16 @@ namespace Frankensteiner
                     selectedMerc.isBeingDeleted = true;
                     selectedMerc.UpdateItemText();
                 }
+            }
+            CheckForModifiedMercenaries();
+        }
+        // Context Option: Copy as Horde/BR Format
+        private void LbContextCopyFormat_Click(object sender, RoutedEventArgs e)
+        {
+            MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
+            if (selectedMerc != null)
+            {
+                System.Windows.Clipboard.SetText(selectedMerc.GetHordeFormat());
             }
             CheckForModifiedMercenaries();
         }

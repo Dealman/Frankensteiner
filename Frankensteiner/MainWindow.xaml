@@ -72,7 +72,9 @@
                                     <MenuItem x:Name="lbContextSave" Header="Save Changes to Mercenary" IsEnabled="False" FontSize="12" Click="LbContextSave_Click"/>
                                     <MenuItem x:Name="lbContextRevert" Header="Revert Changes to Mercenary" IsEnabled="False" FontSize="12" Click="LbContextRevert_Click"/>
                                     <Separator/>
-                                    <MenuItem x:Name="lbContextCopyFace" Header="Copy Face Values" IsEnabled="False" FontSize="12" Click="LbContextCopyFace_Click"/>
+                                    <MenuItem x:Name="lbContextCopyFace" Header="Copy Face Values" IsEnabled="False" FontSize="12" Click="LbContextCopyFace_Click">
+                                        <MenuItem x:Name="lbContextCopyFormat" Header="Copy as Horde/BR Format" IsEnabled="False" FontSize="12" Click="LbContextCopyFormat_Click"/>
+                                    </MenuItem>
                                     <MenuItem x:Name="lbContextPasteFace" Header="Paste Face Values" IsEnabled="False" FontSize="12" Click="LbContextPasteFace_Click"/>
                                     <Separator/>
                                     <MenuItem x:Name="lbContextExport" Header="Export Mercenary to Clipboard" IsEnabled="False" FontSize="12" Click="LbContextExport_Click"/>

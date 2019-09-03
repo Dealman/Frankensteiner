@@ -385,6 +385,11 @@ namespace Frankensteiner
             UpdateItemText();
         }
 
+        public string GetHordeFormat()
+        {
+            return String.Format("DefaultCharacterFace=(Translate=({0}),Rotate=({1}),Scale=({2}))", string.Join(",", FaceValues.Select(x => x.Translation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Rotation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Scale.ToString()).ToArray()));
+        }
+
         public override string ToString()
         {
             if (isHordeMercenary)
