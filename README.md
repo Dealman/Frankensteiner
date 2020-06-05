@@ -1,3 +1,13 @@
+<details>
+  <summary>Screenshots</summary>
+  <p>
+    <img src="https://i.imgur.com/cP0Gnx1.png" alt="Image #1">
+    <img src="https://i.imgur.com/kD9Zlsw.png" alt="Image #2">
+    <img src="https://i.imgur.com/Lor0MA8.png" alt="Image #3">
+    <img src="https://i.imgur.com/bfbcdrQ.png" alt="Image #4">
+  </p>
+</details>
+
 # Frankensteiner
 This is a program to aid in the process of creating asymmetric faces for your Mordhau characters. What would otherwise be a gruesome process of individually changing up to 147 values - can now be done through a user-friendly interface instead.
 
@@ -22,6 +32,9 @@ You can select either one or multiple mercenaries. If you want to select multipl
 If you have only one mercenary selected, you can either double-click or press enter to open the Mercenary Editor. Here you can change all the values as you please and also change the name.
 
 If you have multiple mercenaries selected, you can not use the Mercenary Editor. But you can randomize and frankenstein them via the context menu*(right-click)*.
+
+### Backups
+This program has the option to automatically create backups before any changes are made. You also have the option to save old backups by compressing them into a ZIP archive. You can also limit the number of backups this archive should contain, 0 being no limit.
 
 ### Shortcuts
 Under Settings you can enable shortcuts, this is useful for when you wanna make changes quickly.
