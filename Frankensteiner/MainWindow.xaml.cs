@@ -157,6 +157,17 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
+            BRefreshCharacters_Click(null, null); // Automatically load mercenaries on app startup -  This was also added in the first Pull Request (#2)
+            #region Set WindowState
+            if (Properties.Settings.Default.isWindowMaximized == true)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            if (Properties.Settings.Default.isWindowMaximized == false)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            #endregion
         }
 
         #region Events & Methods for Changing of Theme/Accent
@@ -203,11 +214,21 @@ namespace Frankensteiner
         }
         #endregion
 
-        #region Save Window Position + Size
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        #region Save Window Position + Size + WindowState
+        private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             Properties.Settings.Default.appStartupPos = new System.Drawing.Point(Convert.ToInt16(metroWindow.Left), Convert.ToInt16(metroWindow.Top));
             Properties.Settings.Default.appStartupSize = new System.Drawing.Point(Convert.ToInt16(metroWindow.ActualWidth), Convert.ToInt16(metroWindow.ActualHeight));
+
+            // NOTICE: Added new boolean property (isWindowMaximized) to fix weird behavior with appStartupSize and appStartupPos
+            if (Convert.ToBoolean(this.WindowState == WindowState.Maximized))
+            {
+                Properties.Settings.Default.isWindowMaximized = true;
+            }
+            if (Convert.ToBoolean(this.WindowState == WindowState.Normal))
+            {
+                Properties.Settings.Default.isWindowMaximized = false;
+            }
             Properties.Settings.Default.Save();
         }
         #endregion
