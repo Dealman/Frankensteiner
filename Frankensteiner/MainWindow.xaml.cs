@@ -157,6 +157,7 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
+            BRefreshCharacters_Click(null, null); // Auto load mercenaries on app startup
         }
 
         #region Events & Methods for Changing of Theme/Accent
