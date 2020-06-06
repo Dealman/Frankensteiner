@@ -59,8 +59,7 @@ namespace Frankensteiner
                             Properties.Settings.Default.cfgConfigPath = gameConfigPath;
                             Properties.Settings.Default.cfgBackupPath = gameConfigPath.Replace("Game.ini", "");
                             Properties.Settings.Default.Save();
-                            System.Windows.MessageBox.Show("Successfully located the configuration file! You may now create", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            RefreshMercenaries(); // We'll also refresh mercenaries here
+                            System.Windows.MessageBox.Show("Successfully located the configuration file! You may now create.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     } catch(Exception eggseption) {
                         System.Windows.MessageBox.Show(String.Format("An error occured whilst trying to automagically find the configuration file! Error Message:\n\n{0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -158,7 +157,7 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
-            RefreshMercenaries(); // Automatically load mercenaries on app startup - This was also added in the first Pull Request which has since been deleted
+            RefreshMercenaries(); // Automatically load mercenaries on app startup - This still works even if the user wants to automatically search for Game.ini. Added another check inside RefreshMercenaries()
             #region Set WindowState
             if (Properties.Settings.Default.isWindowMaximized == true)
             {
@@ -245,7 +244,7 @@ namespace Frankensteiner
         {
             try
             {
-                if (!String.IsNullOrWhiteSpace(gameConfigPath))
+                if (!String.IsNullOrWhiteSpace(gameConfigPath) && File.Exists(gameConfigPath)) // Make sure it exists so we don't potentially run into problems
                 {
                     config = new ConfigParser(gameConfigPath);
                     if (config.ParseConfig())
@@ -833,6 +832,7 @@ namespace Frankensteiner
                         Properties.Settings.Default.cfgBackupPath = gameConfigPath.Replace(@"\Game.ini", "");
                         Properties.Settings.Default.Save();
                         System.Windows.MessageBox.Show("Configuration file validated successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        RefreshMercenaries();   // We'll also refresh mercenaries here
                     } else {
                         System.Windows.MessageBox.Show("Failed to verify the configuration file! Are you sure this is the correct file? Please, try again.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
