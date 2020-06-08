@@ -59,7 +59,7 @@ namespace Frankensteiner
                             Properties.Settings.Default.cfgConfigPath = gameConfigPath;
                             Properties.Settings.Default.cfgBackupPath = gameConfigPath.Replace("Game.ini", "");
                             Properties.Settings.Default.Save();
-                            System.Windows.MessageBox.Show("Successfully located the configuration file! You may now create", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            System.Windows.MessageBox.Show("Successfully located the configuration file! You may now create.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     } catch(Exception eggseption) {
                         System.Windows.MessageBox.Show(String.Format("An error occured whilst trying to automagically find the configuration file! Error Message:\n\n{0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -157,6 +157,17 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
+            RefreshMercenaries(); // Automatically load mercenaries on app startup - This still works even if the user wants to automatically search for Game.ini. Added another check inside RefreshMercenaries()
+            #region Set WindowState
+            if (Properties.Settings.Default.isWindowMaximized == true)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            if (Properties.Settings.Default.isWindowMaximized == false)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            #endregion
         }
 
         #region Events & Methods for Changing of Theme/Accent
@@ -203,11 +214,22 @@ namespace Frankensteiner
         }
         #endregion
 
-        #region Save Window Position + Size
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        #region Save Window Position + Size + WindowState
+        private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             Properties.Settings.Default.appStartupPos = new System.Drawing.Point(Convert.ToInt16(metroWindow.Left), Convert.ToInt16(metroWindow.Top));
             Properties.Settings.Default.appStartupSize = new System.Drawing.Point(Convert.ToInt16(metroWindow.ActualWidth), Convert.ToInt16(metroWindow.ActualHeight));
+
+            // Added new boolean property (isWindowMaximized) to fix weird behavior with appStartupSize and appStartupPos
+            // There is an issue with saving a Minimized WindowState which is being worked on.
+            if (this.WindowState == WindowState.Maximized)
+            {
+                Properties.Settings.Default.isWindowMaximized = true;
+            }
+            if (this.WindowState == WindowState.Normal)
+            {
+                Properties.Settings.Default.isWindowMaximized = false;
+            }
             Properties.Settings.Default.Save();
         }
         #endregion
@@ -215,28 +237,35 @@ namespace Frankensteiner
         #region Mercenary List Logic
         private void BRefreshCharacters_Click(object sender, RoutedEventArgs e)
         {
+            RefreshMercenaries();
+        }
+
+        private void RefreshMercenaries()
+        {
             try
             {
-                if (!String.IsNullOrWhiteSpace(gameConfigPath))
+                if (!String.IsNullOrWhiteSpace(gameConfigPath) && File.Exists(gameConfigPath)) // Make sure it exists so we don't potentially run into problems
                 {
                     config = new ConfigParser(gameConfigPath);
                     if (config.ParseConfig())
                     {
-                        if(_loadedMercenaries.Count > 0)
+                        if (_loadedMercenaries.Count > 0)
                         {
                             _loadedMercenaries.Clear();
                         }
                         config.ProcessMercenaries();
-                        for(int i=0; i < config.Mercenaries.Count; i++)
+                        for (int i = 0; i < config.Mercenaries.Count; i++)
                         {
                             _loadedMercenaries.Add(config.Mercenaries[i]);
                         }
-                        for(int i=0; i < _loadedMercenaries.Count; i++)
+                        for (int i = 0; i < _loadedMercenaries.Count; i++)
                         {
-                            if(i%2 == 0)
+                            if (i % 2 == 0)
                             {
                                 _loadedMercenaries[i].BackgroundColour = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(69, 69, 69)) : new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                            } else {
+                            }
+                            else
+                            {
                                 _loadedMercenaries[i].BackgroundColour = (Properties.Settings.Default.appTheme == "Dark") ? new SolidColorBrush(Color.FromRgb(49, 49, 49)) : new SolidColorBrush(Color.FromRgb(225, 225, 225));
                             }
                         }
@@ -244,7 +273,9 @@ namespace Frankensteiner
                         bShowTools.IsEnabled = true;
                     }
                 }
-            } catch (Exception eggseption) {
+            }
+            catch (Exception eggseption)
+            {
                 System.Windows.MessageBox.Show(String.Format("An error has occured whilst trying to parse the configuration file! Error Message:\n\n{0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -801,6 +832,7 @@ namespace Frankensteiner
                         Properties.Settings.Default.cfgBackupPath = gameConfigPath.Replace(@"\Game.ini", "");
                         Properties.Settings.Default.Save();
                         System.Windows.MessageBox.Show("Configuration file validated successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        RefreshMercenaries();   // We'll also refresh mercenaries here
                     } else {
                         System.Windows.MessageBox.Show("Failed to verify the configuration file! Are you sure this is the correct file? Please, try again.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
