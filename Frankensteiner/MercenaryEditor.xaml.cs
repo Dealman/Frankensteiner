@@ -53,14 +53,14 @@ namespace Frankensteiner
 
             // Create 49 sliders, it consists of 3 separate sliders - one for each value
             dgValueList.ItemsSource = _sliders;
-            for (int i=0; i < 49; i++)
+            for (int i=1; i < 49; i++)
             {
                 var newSlider = new FaceValueSliderItem();
                 newSlider.Translation = selectedMerc.FaceValues[i].Translation;
                 newSlider.Rotation = selectedMerc.FaceValues[i].Rotation;
                 newSlider.Scale = selectedMerc.FaceValues[i].Scale;
                 //newSlider.UpdateDescription(String.Format("{0}: Unknown Value", (i + 1)));
-                newSlider.UpdateDescription(String.Format(nameValue[i]));
+                newSlider.UpdateDescription(string.Format(nameValue[i]));
                 _sliders.Add(newSlider);
             }
             tbNewName.IsEnabled = !mercenary.isHordeMercenary;

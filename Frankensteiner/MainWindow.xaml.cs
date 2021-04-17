@@ -25,6 +25,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 // Relevant File? C:\Program Files (x86)\Steam\steamapps\common\Mordhau\Mordhau\Content\Mordhau\Blueprints\Characters\BP_ControllableDummy.uasset
+// TODO: Make mercenaries organizable by drag and drop or moving up and down - Make sure to move face values in Game.ini too!
+// TODO: Make a "favorite mercenary" with a star that you can click so that mercenary will appear on top
 
 namespace Frankensteiner
 {
@@ -157,7 +159,7 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
-            RefreshMercenaries(); // Automatically load mercenaries on app startup - This still works even if the user wants to automatically search for Game.ini. Added another check inside RefreshMercenaries()
+            RefreshMercenaries();   // Automatically load mercenaries on app startup
             #region Set WindowState
             if (Properties.Settings.Default.isWindowMaximized == true)
             {
@@ -304,6 +306,29 @@ namespace Frankensteiner
         }
         #endregion
 
+        private void ResetWindowSize_Click(object sender, EventArgs e) // This seems unnecessary to have but w/e. It might be useful.
+        {
+            this.WindowState = WindowState.Normal;
+            this.Width = 600;   // Min Width
+            this.Height = 450;  // Min Height
+            Properties.Settings.Default.appStartupSize = new System.Drawing.Point(Convert.ToInt16(metroWindow.ActualWidth), Convert.ToInt16(metroWindow.ActualHeight));
+            Properties.Settings.Default.Save();
+            #region MainWindow.g.cs Code
+            /*
+                             case 62:
+                    this.ResetWindowSize = ((System.Windows.Controls.Button)(target));
+
+#line 182 "..\..\MainWindow.xaml"
+                    this.ResetWindowSize.Click += new System.Windows.RoutedEventHandler(this.ResetWindowSize_Click);
+
+#line default
+#line hidden
+                    return;
+             */
+            #endregion
+        }
+
+        #region Backup files
         private void CreateBackup()
         {
             try
@@ -361,6 +386,7 @@ namespace Frankensteiner
                 System.Windows.MessageBox.Show(String.Format("An error has occured whilst trying to create/modify the ZIP backup file. Error Message:\n\n{0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        #endregion
 
         private List<MercenaryItem> GetModifiedMercenaries()
         {

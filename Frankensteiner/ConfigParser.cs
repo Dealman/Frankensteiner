@@ -27,7 +27,7 @@ namespace Frankensteiner
             {
                 // Read the config entirely, then parse it and fetch only the mercenaries
                 fileContents = File.ReadAllText(configFile);
-                Regex rx = new Regex(@"^(CharacterProfiles.+)", RegexOptions.Multiline);
+                Regex rx = new Regex(@"^CharacterProfiles.+\)\)", RegexOptions.Multiline);
                 foreach (Match match in rx.Matches(fileContents))
                 {
                     parsedMercenaries.Add(match.Value);
@@ -85,7 +85,7 @@ namespace Frankensteiner
                     rx = new Regex(@"AppearanceCustomization=\(.+\),F");
                     mercenary.AppearanceString = rx.Match(parsedMercenary).Value.Replace("),F", ")");
                     // Parse the Face Customization
-                    rx = new Regex(@"FaceCustomization=\(.+\)\),");
+                    rx = new Regex(@"FaceCustomization.+\)\)"); // OLD @"FaceCustomization=\(.+\)\),"
                     mercenary.FaceString = rx.Match(parsedMercenary).Value.Replace(")),", "))");
                     // Parse the Skills
                     rx = new Regex(@"SkillsCustomization=\(.+\)\)");
