@@ -25,8 +25,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 // Relevant File? C:\Program Files (x86)\Steam\steamapps\common\Mordhau\Mordhau\Content\Mordhau\Blueprints\Characters\BP_ControllableDummy.uasset
-// TODO: Make mercenaries organizable by drag and drop or moving up and down - Make sure to move face values in Game.ini too!
-// TODO: Make a "favorite mercenary" with a star that you can click so that mercenary will appear on top
 
 namespace Frankensteiner
 {
