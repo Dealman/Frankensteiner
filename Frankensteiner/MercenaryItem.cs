@@ -248,7 +248,8 @@ namespace Frankensteiner
             // This is just a nasty copy and paste because I'm lazy. See ConfigParser.cs for info
             try
             {
-                Regex rx = new Regex(@"("".+"")"); //new Regex("\"(.+)\"");
+                //Regex rx = new Regex(@"("".+"")"); //new Regex("\"(.+)\"");
+                Regex rx = new Regex("\\\"(.*?)\\\"");
                 if (rx.IsMatch(OriginalEntry))
                 {
                     Name = rx.Match(OriginalEntry).Value.Replace("\"", "");
@@ -262,7 +263,7 @@ namespace Frankensteiner
                         AppearanceString = rx.Match(OriginalEntry).Value.Replace("),F", ")");
                         rx = new Regex(@"FaceCustomization=\(.+\)\),");
                         FaceString = rx.Match(OriginalEntry).Value.Replace(")),", "))");
-                        rx = new Regex(@"SkillsCustomization=\(.+\)\)");
+                        rx = new Regex(@"SkillsCustomization=\(.+\)");
                         SkillString = rx.Match(OriginalEntry).Value;
                         if (ParseFaceValues())
                         {
