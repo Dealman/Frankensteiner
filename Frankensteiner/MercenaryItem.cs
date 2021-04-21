@@ -208,6 +208,21 @@ namespace Frankensteiner
             }
         }
         #endregion
+        #region Category String
+        private string _categoryString = "";
+        public string CategoryString
+        {
+            get { return _categoryString; }
+            set
+            {
+                if (value != _categoryString)
+                {
+                    _categoryString = value;
+                    OnPropertyChanged(nameof(CategoryString));
+                }
+            }
+        }
+        #endregion
         // Logic Fields
         public int index = 0;
         public bool isImportedMercenary = false;
@@ -265,6 +280,8 @@ namespace Frankensteiner
                         FaceString = rx.Match(OriginalEntry).Value.Replace(")),", "))");
                         rx = new Regex(@"SkillsCustomization=\(.+\)");
                         SkillString = rx.Match(OriginalEntry).Value;
+                        rx = new Regex(@"Category=.+\)");
+                        CategoryString = rx.Match(OriginalEntry).Value.Replace(")", ""); // only temporary
                         if (ParseFaceValues())
                         {
                             return true;
@@ -397,7 +414,7 @@ namespace Frankensteiner
             {
                 return String.Format("DefaultCharacterFace=(Translate=({0}),Rotate=({1}),Scale=({2}))", string.Join(",", FaceValues.Select(x => x.Translation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Rotation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Scale.ToString()).ToArray()));
             } else {
-                return String.Format("CharacterProfiles=(Name=INVTEXT(\"{0}\"),{1},{2},FaceCustomization=(Translate=({3}),Rotate=({4}),Scale=({5})),{6}", Name, GearString, AppearanceString, string.Join(",", FaceValues.Select(x => x.Translation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Rotation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Scale.ToString()).ToArray()), SkillString);
+                return String.Format("CharacterProfiles=(Name=INVTEXT(\"{0}\"),{1},{2},FaceCustomization=(Translate=({3}),Rotate=({4}),Scale=({5})),{6},{7})", Name, GearString, AppearanceString, string.Join(",", FaceValues.Select(x => x.Translation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Rotation.ToString()).ToArray()), string.Join(",", FaceValues.Select(x => x.Scale.ToString()).ToArray()), SkillString, CategoryString);
             }
         }
     }
