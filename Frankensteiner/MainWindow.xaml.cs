@@ -304,28 +304,6 @@ namespace Frankensteiner
         }
         #endregion
 
-        private void ResetWindowSize_Click(object sender, EventArgs e) // This seems unnecessary to have but w/e. It might be useful.
-        {
-            this.WindowState = WindowState.Normal;
-            this.Width = 600;   // Min Width
-            this.Height = 450;  // Min Height
-            Properties.Settings.Default.appStartupSize = new System.Drawing.Point(Convert.ToInt16(metroWindow.ActualWidth), Convert.ToInt16(metroWindow.ActualHeight));
-            Properties.Settings.Default.Save();
-            #region MainWindow.g.cs Code
-            /*
-                             case 62:
-                    this.ResetWindowSize = ((System.Windows.Controls.Button)(target));
-
-#line 182 "..\..\MainWindow.xaml"
-                    this.ResetWindowSize.Click += new System.Windows.RoutedEventHandler(this.ResetWindowSize_Click);
-
-#line default
-#line hidden
-                    return;
-             */
-            #endregion
-        }
-
         #region Backup files
         private void CreateBackup()
         {

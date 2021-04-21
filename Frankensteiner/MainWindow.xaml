@@ -82,7 +82,7 @@
                                     <MenuItem x:Name="lbContextDelete" Header="Delete Mercenary" Foreground="Red" IsEnabled="False" FontSize="12" Click="LbContextDelete_Click"/>
                                 </ContextMenu>
                             </ListBox.ContextMenu>
-                            
+
                             <ListBox.Resources>
                                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MetroListBoxItem}">
                                     <Setter Property="Content" Value="{Binding Path=ItemText, UpdateSourceTrigger=PropertyChanged}"/>
@@ -179,7 +179,6 @@
                                 </ComboBox>
                                 <CheckBox x:Name="cbConflictWarnings" Content="Display Conflict Warnings" Margin="10,134,0,0" VerticalAlignment="Top" IsChecked="True" Click="CbConflictWarnings_Click"/>
                                 <CheckBox x:Name="cbShortcutKeys" Content="Enable Mercenary List Shortcut Keys" Margin="10,157,10,0" VerticalAlignment="Top" Click="CbShortcutKeys_Click"/>
-                                <Button x:Name="ResetWindowSize" Content="Reset Window Size" HorizontalAlignment="Left" Margin="10,180,0,0" VerticalAlignment="Top" Click="ResetWindowSize_Click"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
