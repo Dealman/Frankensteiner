@@ -157,7 +157,7 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
-            RefreshMercenaries();   // Automatically load mercenaries on app startup
+            RefreshMercenaries(); // Automatically load mercenaries on app startup
             #region Set WindowState
             if (Properties.Settings.Default.isWindowMaximized == true)
             {

@@ -58,3 +58,4 @@ It is recommended that you do not have Mordhau running as you're using this prog
 But in such a case, I have implemented an experimental feature to solve conflicts. If there are conflicts it will ask you to resolve them - a new window will open up showing you the conflicted entries you want to save in the list on the **left**.
 
 And the list on the **right** contain the new mercenaries which may contain changes made by Mordhau. Simply select which one of these you want to replace and it should be able to save them just fine.
+
