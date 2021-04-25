@@ -157,7 +157,7 @@ namespace Frankensteiner
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
-            RefreshMercenaries(); // Automatically load mercenaries on app startup - This still works even if the user wants to automatically search for Game.ini. Added another check inside RefreshMercenaries()
+            RefreshMercenaries(); // Automatically load mercenaries on app startup
             #region Set WindowState
             if (Properties.Settings.Default.isWindowMaximized == true)
             {
@@ -304,6 +304,7 @@ namespace Frankensteiner
         }
         #endregion
 
+        #region Backup files
         private void CreateBackup()
         {
             try
@@ -361,6 +362,7 @@ namespace Frankensteiner
                 System.Windows.MessageBox.Show(String.Format("An error has occured whilst trying to create/modify the ZIP backup file. Error Message:\n\n{0}", eggseption.Message.ToString()), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        #endregion
 
         private List<MercenaryItem> GetModifiedMercenaries()
         {
@@ -757,7 +759,7 @@ namespace Frankensteiner
             if (!String.IsNullOrWhiteSpace(name))
             {
                 // 0 = Default, 1 = Random, 2 = Frankenstein
-                string defaultCode = String.Format("CharacterProfiles=(Name=INVTEXT(\"{0}\"),GearCustomization=(Wearables=((),(),(ID=30),(),(),(),(),(ID=15),(ID=8)),Equipment=((),(),())),AppearanceCustomization=(Emblem=0,EmblemColors=(0,0),MetalRoughnessScale=0,MetalTint=0,Age=0,Voice=2,VoicePitch=157,bIsFemale=False,Fat=85,Skinny=85,Strong=85,SkinColor=0,Face=0,EyeColor=0,HairColor=0,Hair=0,FacialHair=0,Eyebrows=0),FaceCustomization=(Translate=(15360,15360,15840,12656,15364,12653,15862,0,15385,0,16320,15847,15855,15855,384,8690,8683,480,480,480,31700,480,480,480,15360,15840,18144,15840,31690,15850,15860,11471,11471,12463,12463,11471,11471,15840,15840,0,0,0,0,0,0,0,0,7665,7660),Rotate=(0,0,0,0,0,0,16,0,0,0,0,14,0,0,12288,591,367,0,15855,15855,18976,0,0,0,0,18432,0,0,18816,0,0,0,0,0,0,0,0,655,335,0,0,15840,15840,0,0,15840,15840,0,0),Scale=(14351,14351,0,15360,0,15360,0,15855,0,15855,14336,0,0,0,14350,0,0,15855,15855,15855,15840,0,15855,15855,0,15914,6,0,15840,0,0,0,0,0,0,0,0,15855,15855,0,0,0,0,0,0,0,0,0,0)),SkillsCustomization=(Perks=0))", name);
+                string defaultCode = String.Format("CharacterProfiles=(Name=INVTEXT(\"{0}\"),GearCustomization=(Wearables=((),(),(ID=30),(),(),(),(),(ID=15),(ID=8)),Equipment=((),(),())),AppearanceCustomization=(Emblem=0,EmblemColors=(0,0),MetalRoughnessScale=0,MetalTint=0,Age=0,Voice=2,VoicePitch=157,bIsFemale=False,Fat=85,Skinny=85,Strong=85,SkinColor=0,Face=0,EyeColor=0,HairColor=0,Hair=0,FacialHair=0,Eyebrows=0),FaceCustomization=(Translate=(15360,15360,15840,12656,15364,12653,15862,0,15385,0,16320,15847,15855,15855,384,8690,8683,480,480,480,31700,480,480,480,15360,15840,18144,15840,31690,15850,15860,11471,11471,12463,12463,11471,11471,15840,15840,0,0,0,0,0,0,0,0,7665,7660),Rotate=(0,0,0,0,0,0,16,0,0,0,0,14,0,0,12288,591,367,0,15855,15855,18976,0,0,0,0,18432,0,0,18816,0,0,0,0,0,0,0,0,655,335,0,0,15840,15840,0,0,15840,15840,0,0),Scale=(14351,14351,0,15360,0,15360,0,15855,0,15855,14336,0,0,0,14350,0,0,15855,15855,15855,15840,0,15855,15855,0,15914,6,0,15840,0,0,0,0,0,0,0,0,15855,15855,0,0,0,0,0,0,0,0,0,0)),SkillsCustomization=(Perks=0),Category=\"\")", name);
                 MercenaryItem newMercenary = new MercenaryItem(defaultCode);
                 if (newMercenary.ValidateMercenaryCode())
                 {

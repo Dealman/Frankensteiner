@@ -82,7 +82,7 @@
                                     <MenuItem x:Name="lbContextDelete" Header="Delete Mercenary" Foreground="Red" IsEnabled="False" FontSize="12" Click="LbContextDelete_Click"/>
                                 </ContextMenu>
                             </ListBox.ContextMenu>
-                            
+
                             <ListBox.Resources>
                                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MetroListBoxItem}">
                                     <Setter Property="Content" Value="{Binding Path=ItemText, UpdateSourceTrigger=PropertyChanged}"/>
@@ -102,7 +102,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                         </Grid>
-                        <Button x:Name="bRefreshCharacters" Content="Refresh" Margin="10,0,10,42" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BRefreshCharacters_Click" IsEnabled="False"/>
+                        <Button x:Name="bRefreshCharacters" Content="Refresh Mercenaries" Margin="10,0,10,42" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BRefreshCharacters_Click" IsEnabled="False"/>
                         <!-- For some reason ListBox doesn't automagically set the BorderBrush to the same as the app's accent. So we use the one below to bind it. -->
                         <DataGrid x:Name="dgDummy" Visibility="Collapsed"/>
                         <Button x:Name="bShowTools" Content="Show Additional Tools" Margin="10,0,10,10" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" IsEnabled="False" Click="BShowTools_Click"/>
@@ -195,8 +195,9 @@
                                 <LineBreak/>
                                 <Run Text="This is a program that lets you customize the facial appearance of mercenaries in Mordhau beyond the game's typical limits. Typically, every face is symmetrical - to avoid horrible mostrosities from being made."/>
                             </Paragraph>
-                            <Paragraph TextAlignment="Center">
-                                <Run FontWeight="Bold" Text="Some Tips:"/>
+                            <Paragraph TextAlignment="Left">
+                                <LineBreak/>
+                                <Run FontWeight="Bold" Text="Tips:"/>
                                 <LineBreak/>
                                 <Run Text="• You can right-click the [...] buttons to open the set folder."/>
                                 <LineBreak/>
@@ -206,13 +207,15 @@
                                 <LineBreak/>
                                 <Run Text="• Frankenstein button is best button."/>
                                 <LineBreak/>
-                                <Run Text="• Disable startup movies to load into the game a bit faster if you find yourself restart a lot."/>
+                                <Run Text="• Disable startup movies to load into the game a bit faster if you find yourself restarting a lot."/>
                                 <LineBreak/>
                                 <Run Text="• Enable shortcut keybinds in the Settings"/>
                                 <LineBreak/>
                                 <Run Text="• You can select multiple mercenaries!"/>
                                 <LineBreak/>
                                 <Run Text="• Support Triternion, they're awesome! No seriously, they are. It literally says so on their website."/>
+                                <LineBreak/>
+                                <Run Text="• Always give love to Seymour! But also be wary..."/>
                                 <LineBreak/>
                                 <Run Text="• If you're a better programmer than me, which you probably are - you can help improve this program via GitHub."/>
                                 <InlineUIContainer>

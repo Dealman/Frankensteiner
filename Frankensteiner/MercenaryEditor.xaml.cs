@@ -60,7 +60,7 @@ namespace Frankensteiner
                 newSlider.Rotation = selectedMerc.FaceValues[i].Rotation;
                 newSlider.Scale = selectedMerc.FaceValues[i].Scale;
                 //newSlider.UpdateDescription(String.Format("{0}: Unknown Value", (i + 1)));
-                newSlider.UpdateDescription(String.Format(nameValue[i]));
+                newSlider.UpdateDescription(string.Format(nameValue[i]));
                 _sliders.Add(newSlider);
             }
             tbNewName.IsEnabled = !mercenary.isHordeMercenary;
