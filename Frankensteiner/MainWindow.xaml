@@ -179,6 +179,7 @@
                                 </ComboBox>
                                 <CheckBox x:Name="cbConflictWarnings" Content="Display Conflict Warnings" Margin="10,134,0,0" VerticalAlignment="Top" IsChecked="True" Click="CbConflictWarnings_Click"/>
                                 <CheckBox x:Name="cbShortcutKeys" Content="Enable Mercenary List Shortcut Keys" Margin="10,157,10,0" VerticalAlignment="Top" Click="CbShortcutKeys_Click"/>
+                                <CheckBox x:Name="cbUpdateOnStartup" Content="Automatically Check For Updates" Margin="10,180,10,0" VerticalAlignment="Top" IsChecked="True" Click="CbUpdateOnStartup_Click"/>
                             </Grid>
                         </TabItem>
                     </TabControl>

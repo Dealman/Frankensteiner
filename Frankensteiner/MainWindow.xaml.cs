@@ -37,6 +37,7 @@ namespace Frankensteiner
         private ObservableCollection<MercenaryItem> _loadedMercenaries = new ObservableCollection<MercenaryItem>();
         private MercenaryItem _copiedMercenary;
         private bool changeDetected = false;
+        private UpdateChecker checkVersion = new UpdateChecker();
 
         public MainWindow()
         {
@@ -119,6 +120,8 @@ namespace Frankensteiner
             cbRestartMordhauMode.IsChecked = Properties.Settings.Default.cfgRestartMordhauMode;
             // Shortcuts
             cbShortcutKeys.IsChecked = Properties.Settings.Default.cfgShortcutsEnabled;
+            // Check for updates
+            cbUpdateOnStartup.IsChecked = Properties.Settings.Default.cfgUpdateOnStartup;
             #endregion
             #region Set Application Theme & Accent
             try
@@ -151,10 +154,14 @@ namespace Frankensteiner
                 metroWindow.Height = Properties.Settings.Default.appStartupSize.Y;
             }
             #endregion
-            #region Set App Version in About Tab
+            #region Version Stuff
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
+            if (Properties.Settings.Default.cfgUpdateOnStartup == true)
+            {
+                checkVersion.CheckLatestVersion(500, false);
+            }
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
             RefreshMercenaries(); // Automatically load mercenaries on app startup
@@ -220,7 +227,6 @@ namespace Frankensteiner
             Properties.Settings.Default.appStartupPos = new System.Drawing.Point(Convert.ToInt16(metroWindow.Left), Convert.ToInt16(metroWindow.Top));
             Properties.Settings.Default.appStartupSize = new System.Drawing.Point(Convert.ToInt16(metroWindow.ActualWidth), Convert.ToInt16(metroWindow.ActualHeight));
 
-            // Added new boolean property (isWindowMaximized) to fix weird behavior with appStartupSize and appStartupPos
             // There is an issue with saving a Minimized WindowState which is being worked on.
             if (this.WindowState == WindowState.Maximized)
             {
@@ -1023,6 +1029,11 @@ namespace Frankensteiner
             Properties.Settings.Default.cfgShortcutsEnabled = cbShortcutKeys.IsChecked.Value;
             Properties.Settings.Default.Save();
         }
+        private void CbUpdateOnStartup_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.cfgUpdateOnStartup = cbUpdateOnStartup.IsChecked.Value;
+            Properties.Settings.Default.Save();
+        }
         #endregion
 
         #region ListBox Context Menu Logic
@@ -1258,10 +1269,11 @@ namespace Frankensteiner
         {
             Process.Start("https://www.reddit.com/r/Mordhau/comments/cll3kl/release_frankensteiner_v1200/");
         }
-        private void BMordhau_Click(object sender, RoutedEventArgs e)
+        // Mordhau forums are being discontinued
+        /*private void BMordhau_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://mordhau.com/forum/topic/19301/release-frankensteiner-create-asymmetric-faces/");
-        }
+        }*/
         private void BTitleSave_Click(object sender, RoutedEventArgs e)
         {
             List<MercenaryItem> _modifiedMercs = GetModifiedMercenaries();
