@@ -81,6 +81,7 @@ namespace Frankensteiner
 				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 				ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
+				// Fetch version text file
 				WebClient client = new WebClient();
 				string version = client.DownloadString(url);
 				latestVersion = version.Trim();
@@ -94,6 +95,7 @@ namespace Frankensteiner
 
 		private void SetVersion()
 		{
+			// Set VERSION to the assembly version (Frankensteiner's version)
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
 			VERSION = fvi.FileVersion;

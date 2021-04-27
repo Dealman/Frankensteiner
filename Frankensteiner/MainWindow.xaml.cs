@@ -653,7 +653,7 @@ namespace Frankensteiner
                         if(_loadedMercenaries[i].isHordeMercenary)
                         {
                             _loadedMercenaries[i].FaceValues = importedMerc.FaceValues;
-                            _loadedMercenaries[i].ItemText = "Horde/BR - Unsaved Changes!";
+                            _loadedMercenaries[i].ItemText = "Horde Mercenary - Unsaved Changes!";
                             _loadedMercenaries[i].isOriginal = false;
                         }
                     }
@@ -1061,7 +1061,7 @@ namespace Frankensteiner
                         UpdateContextItem(lbContextExport, String.Format("Export {0} to Clipboard", selectedMerc.Name), true);
                         // Copy Face
                         UpdateContextItem(lbContextCopyFace, String.Format("Copy Face Values from {0}", selectedMerc.Name), true);
-                        UpdateContextItem(lbContextCopyFormat, "Copy as Horde/BR Format", true);
+                        UpdateContextItem(lbContextCopyFormat, "Copy as Horde Format", true);
                         // Paste Face
                         if(selectedMerc != _copiedMercenary && _copiedMercenary != null)
                         {
@@ -1243,7 +1243,7 @@ namespace Frankensteiner
             }
             CheckForModifiedMercenaries();
         }
-        // Context Option: Copy as Horde/BR Format
+        // Context Option: Copy as Horde Format
         private void LbContextCopyFormat_Click(object sender, RoutedEventArgs e)
         {
             MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
@@ -1385,7 +1385,7 @@ namespace Frankensteiner
                         MercenaryItem _selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
                         if (_selectedMerc != null)
                         {
-                            // Normal or Horde/BR Mercenary With Changes - Revert
+                            // Normal or Horde Mercenary With Changes - Revert
                             if (!_selectedMerc.isOriginal && !_selectedMerc.isImportedMercenary || !_selectedMerc.isOriginal && _selectedMerc.isHordeMercenary)
                             {
                                 _selectedMerc.RevertCurrentChanges();

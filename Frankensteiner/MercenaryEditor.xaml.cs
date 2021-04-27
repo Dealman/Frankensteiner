@@ -48,8 +48,8 @@ namespace Frankensteiner
                 "Chin", "Cheek - Bottom Left", "Cheek - Bottom Right", "Lower Lip", "Lower Lip - Left", "Lower Lip - Right", "Cheek - Top Left",
                 "Philtrum (Medial Cleft)", "Lip - Left", "Lip - Right", "Philtrum - Top", "Nose - Top", "Glabella (Nose Bridge) - Bottom", "Glabella (Nose Bridge) - Top",
                 "Infraorbital Margin - Right", "Cheek - Middle Left", "Cheek - Middle Right", "Left Eyebrow - Head", "Right Eyebrow - Head", "Left Eyebrow - Middle", "Right Eyebrow - Middle",
-                "Left Eyebrow - Tail", "Right Eyebrow - Tail", "Ear - Left", "Ear - Right", "Unknown Value", "Left Eyelid - Top", "Left Eyelid - Bottom",
-                "Unknown Value", "Unknown Value", "Unknown Value", "Right Eyelid - Top", "Right Eyelid - Bottom", "Cheek - Left", "Cheek - Right"};
+                "Left Eyebrow - Tail", "Right Eyebrow - Tail", "Ear - Left", "Ear - Right", "Unknown Value", "Unknown Value", "Left Eyelid - Top",
+                "Left Eyelid - Bottom", "Unknown Value", "Unknown Value", "Right Eyelid - Top", "Right Eyelid - Bottom", "Cheek - Left", "Cheek - Right"};
 
             // Create 49 sliders, it consists of 3 separate sliders - one for each value
             dgValueList.ItemsSource = _sliders;
