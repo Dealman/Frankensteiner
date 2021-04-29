@@ -12,10 +12,11 @@ namespace Frankensteiner
 {
 	public partial class UpdateChecker
 	{
-		private static string VERSION;
+		public string VERSION { get; private set; }
 		private static string GITHUB_FILE = "https://raw.githubusercontent.com/Halen84/Frankensteiner/master/version.txt"; // Be sure to change Halen84 to Dealman
+		private string EXE_FILE;
 		private string latestVersion;
-		private int Timeout = 500;
+		public int Timeout = 500;
 
 		public UpdateChecker()
 		{
@@ -42,11 +43,11 @@ namespace Frankensteiner
 					}
 					else
 					{
-						var result = MessageBox.Show("A new update is avaiable! Would you like to install it?", "Frankensteiner", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-						if (result == DialogResult.Yes)
+						if (MessageBox.Show("A new update is avaiable! Would you like to install it?", "Frankensteiner", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 						{
 							//Process.Start("https://github.com/Dealman/Frankensteiner/releases/latest");
 							Process.Start("https://github.com/Halen84/Frankensteiner/releases/latest");
+							//Process.Start(EXE_FILE); // Instead of going to releases page, maybe just directly download the file. I probably wont add this.
 						}
 					}
 				}
@@ -57,7 +58,7 @@ namespace Frankensteiner
 					{
 						CheckLatestVersion(Timeout);
 					}
-					else if(result == DialogResult.Cancel)
+					else if (result == DialogResult.Cancel)
 					{
 						latestVersionFetchThread.Abort();
 					}
@@ -66,11 +67,17 @@ namespace Frankensteiner
 			}
 			catch (WebException ex)
 			{
-				MessageBox.Show(ex.ToString(), "Frankensteiner", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				if (MessageBox.Show("Failed to fetch latest update. Retry?", "Frankensteiner", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) == DialogResult.Retry)
+				{
+					CheckLatestVersion(Timeout);
+				}
 			}
 			catch (ThreadInterruptedException ex)
 			{
-				MessageBox.Show(ex.ToString(), "Frankensteiner", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				if (MessageBox.Show("Failed to fetch latest update. Retry?", "Frankensteiner", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) == DialogResult.Retry)
+				{
+					CheckLatestVersion(Timeout);
+				}
 			}
 		}
 
@@ -90,7 +97,7 @@ namespace Frankensteiner
 			catch (WebException ex)
 			{
 				// I should probably add a retry here too but idk
-				MessageBox.Show(ex.ToString(), "Frankensteiner", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Failed to download verion file.", "Frankensteiner", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
@@ -100,11 +107,8 @@ namespace Frankensteiner
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
 			VERSION = fvi.FileVersion;
+			EXE_FILE = string.Format("https://github.com/Halen84/Frankensteiner/releases/download/{0}/Frankensteiner.exe", VERSION);
 		}
 
-		public static string GetVersion()
-		{
-			return VERSION;
-		}
 	}
 }

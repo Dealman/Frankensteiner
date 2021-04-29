@@ -155,12 +155,10 @@ namespace Frankensteiner
             }
             #endregion
             #region Version Stuff
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
+            runVersion.Text = String.Format("{0} | Made by Dealman", checkVersion.VERSION);
             if (Properties.Settings.Default.cfgUpdateOnStartup == true)
             {
-                checkVersion.CheckLatestVersion(500, false);
+                checkVersion.CheckLatestVersion(checkVersion.Timeout, false);
             }
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
@@ -221,7 +219,7 @@ namespace Frankensteiner
         }
         #endregion
 
-        #region Save Window Position + Size + WindowState
+        #region Save Settings
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             Properties.Settings.Default.appStartupPos = new System.Drawing.Point(Convert.ToInt16(metroWindow.Left), Convert.ToInt16(metroWindow.Top));
@@ -236,6 +234,7 @@ namespace Frankensteiner
             {
                 Properties.Settings.Default.isWindowMaximized = false;
             }
+
             Properties.Settings.Default.Save();
         }
         #endregion
@@ -508,7 +507,7 @@ namespace Frankensteiner
             // Try and resolve invalid mercenaries first
             if (_invalidMercs.Count > 0)
             {
-                if(System.Windows.MessageBox.Show(String.Format("Conflicts were detected for those mercenaries:\n\n{0}\n\nWould you like to try and resolve those manually? Choosing no will leave them unsaved.", string.Join("\n", _modifiedMercs.Select(x => String.Format("{0} [{1}]", x.Name, x.OriginalName)).ToArray())), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if(System.Windows.MessageBox.Show(String.Format("Conflicts were detected for these mercenaries:\n\n{0}\n\nWould you like to try and resolve them manually? Choosing \"No\" will leave them unsaved.", string.Join("\n", _modifiedMercs.Select(x => String.Format("{0} [{1}]", x.Name, x.OriginalName)).ToArray())), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
                     // Users wants to resolve, try to resolve
                     if(ResolveAllMercenaryConflicts(_invalidMercs))
@@ -610,7 +609,7 @@ namespace Frankensteiner
             #region Alert User of Unsaved Mercenaries
             if (_failedToSave.Count > 0)
             {
-                System.Windows.MessageBox.Show(String.Format("{0} mercenaries were unable to save for an unknown reason. Those mercenaries are:\n\n{1}", _failedToSave.Count, string.Join("\n", _failedToSave.Select(x => x.Name).ToArray())), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(String.Format("{0} mercenaries were unable to save for an unknown reason.\n\n{1}", _failedToSave.Count, string.Join("\n", _failedToSave.Select(x => x.Name).ToArray())), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             #endregion
 
@@ -981,17 +980,14 @@ namespace Frankensteiner
         private void CbNormalBackup_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgNormalBackup = cbNormalBackup.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbZipBackup_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgZIPBackup = cbZipBackup.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbLimitZipSize_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgZIPLimitActive = cbLimitZipSize.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbDisableMovies_Click(object sender, RoutedEventArgs e)
         {
@@ -1002,37 +998,30 @@ namespace Frankensteiner
             Properties.Settings.Default.cfgAutoClose = cbAutoCloseGame.IsChecked.Value;
             cbRestartMordhau.IsEnabled = cbAutoCloseGame.IsChecked.Value;
             cbRestartMordhauMode.IsEnabled = cbAutoCloseGame.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbCheckConflicts_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgCheckConflict = cbCheckConflicts.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbConflictWarnings_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgConflictWarnings = cbConflictWarnings.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbRestartMordhau_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgRestartMordhau = cbRestartMordhau.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbRestartMordhauMode_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgRestartMordhauMode = cbRestartMordhauMode.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbShortcutKeys_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgShortcutsEnabled = cbShortcutKeys.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbUpdateOnStartup_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgUpdateOnStartup = cbUpdateOnStartup.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         #endregion
 
