@@ -194,7 +194,7 @@
                                 <LineBreak/>
                                 <Run x:Name="runVersion" Text=""/>
                                 <LineBreak/>
-                                <Run Text="Frankensteiner is a program that lets you customize the facial appearance of Mordhau mercenaries beyond the game's typical limits. Typically, every face in Mordhau is symmetrical to avoid horrible monstrosities from being made./>
+                                <Run Text="Frankensteiner is a program that lets you customize the facial appearance of Mordhau mercenaries beyond the game's typical limits. Typically, every face in Mordhau is symmetrical to avoid horrible monstrosities from being made."/>
                             </Paragraph>
                             <Paragraph TextAlignment="Left">
                                 <LineBreak/>
