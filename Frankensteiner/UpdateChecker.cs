@@ -97,7 +97,7 @@ namespace Frankensteiner
 			catch (WebException ex)
 			{
 				// I should probably add a retry here too but idk
-				MessageBox.Show("Failed to download verion file.", "Frankensteiner", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Failed to fetch version file.", "Frankensteiner", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 

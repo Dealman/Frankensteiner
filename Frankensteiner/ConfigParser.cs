@@ -88,8 +88,8 @@ namespace Frankensteiner
                     rx = new Regex(@"FaceCustomization=\(.+\)\),");
                     mercenary.FaceString = rx.Match(parsedMercenary).Value.Replace(")),", "))");
                     // Parse the Skills
-                    rx = new Regex(@"SkillsCustomization=\(.+\)");
-                    mercenary.SkillString = rx.Match(parsedMercenary).Value;
+                    rx = new Regex(@"SkillsCustomization=\(.+\),");
+                    mercenary.SkillString = rx.Match(parsedMercenary).Value.Replace("),", ")");
                     rx = new Regex(@"Category=.+\)");
                     mercenary.CategoryString = rx.Match(parsedMercenary).Value.Replace(")", ""); // only temporary. have to wait and see what category is. possibly related to armory rework.
                 } else {

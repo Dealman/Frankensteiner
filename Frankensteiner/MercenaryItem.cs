@@ -278,8 +278,8 @@ namespace Frankensteiner
                         AppearanceString = rx.Match(OriginalEntry).Value.Replace("),F", ")");
                         rx = new Regex(@"FaceCustomization=\(.+\)\),");
                         FaceString = rx.Match(OriginalEntry).Value.Replace(")),", "))");
-                        rx = new Regex(@"SkillsCustomization=\(.+\)");
-                        SkillString = rx.Match(OriginalEntry).Value;
+                        rx = new Regex(@"SkillsCustomization=\(.+\),");
+                        SkillString = rx.Match(OriginalEntry).Value.Replace("),", ")");
                         rx = new Regex(@"Category=.+\)");
                         CategoryString = rx.Match(OriginalEntry).Value.Replace(")", ""); // only temporary
                         if (ParseFaceValues())
