@@ -43,13 +43,13 @@ namespace Frankensteiner
             #endregion
 
             string[] nameValue =
-                {"Mouth - Middle", "Mouth - Edges", "Nose - Bottom", "Left Eyebrow", "Unknown Value", "Right Eyebrow", "Right Eye",
+                {"Mouth - Middle", "Mouth - Edges", "Nose", "Left Eyebrow", "Unknown Value", "Right Eyebrow", "Right Eye",
                 "Unknown Value", "Unknown Value", "Unknown Value", "Mouth", "Left Eye", "Lips - Left Edge", "Lips - Right Edge",
-                "Chin", "Cheek - Bottom Left", "Cheek - Bottom Right", "Lower Lip", "Lower Lip - Left", "Lower Lip - Right", "Cheek - Top Left",
-                "Philtrum (Medial Cleft)", "Lip - Left", "Lip - Right", "Philtrum - Top", "Nose - Top", "Glabella (Nose Bridge) - Bottom", "Glabella (Nose Bridge) - Top",
-                "Infraorbital Margin - Right", "Cheek - Middle Left", "Cheek - Middle Right", "Left Eyebrow - Head", "Right Eyebrow - Head", "Left Eyebrow - Middle", "Right Eyebrow - Middle",
-                "Left Eyebrow - Tail", "Right Eyebrow - Tail", "Ear - Left", "Ear - Right", "Unknown Value", "Unknown Value", "Left Eyelid - Top",
-                "Left Eyelid - Bottom", "Unknown Value", "Unknown Value", "Right Eyelid - Top", "Right Eyelid - Bottom", "Cheek - Left", "Cheek - Right"};
+                "Chin", "Maxilar - Left", "Maxilar - Right", "Lower Lip", "Lower Lip - Left", "Lower Lip - Right", "Infraorbital Margin - Left",
+                "Medial Cleft", "Lip - Left", "Lip - Right", "Philtrum", "Nose - Tip", "Nose Bridge", "Nose Bridge - Top",
+                "Infraorbital Margin - Right", "Cheek - Left", "Cheek - Right", "Left Eyebrow - Inner", "Right Eyebrow - Inner", "Left Eyebrow - Middle", "Right Eyebrow - Middle",
+                "Left Eyebrow - Outter", "Right Eyebrow - Outter", "Ear - Left", "Ear - Right", "Unknown Value", "Unknown Value", "Left Eyelid - Top",
+                "Left Eyelid - Bottom", "Unknown Value", "Unknown Value", "Right Eyelid - Top", "Right Eyelid - Bottom", "Cheekbone - Left", "Cheekbone - Right"};
 
             // Create 49 sliders, it consists of 3 separate sliders - one for each value
             dgValueList.ItemsSource = _sliders;
