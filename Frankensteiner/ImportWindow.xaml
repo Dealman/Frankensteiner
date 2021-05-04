@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Mercenary Importer" Height="300" Width="600" MinHeight="300" MinWidth="600" WindowStartupLocation="CenterOwner" TitleCaps="False">
     <Grid>
-        <TextBox x:Name="tbMercenaryCode" Margin="10,10,10,72" TextWrapping="Wrap" Controls:TextBoxHelper.Watermark="Paste mercenary code here..."/>
+        <TextBox x:Name="tbMercenaryCode" Margin="10,10,10,72" TextWrapping="Wrap" Controls:TextBoxHelper.Watermark="Paste mercenary code here..." TextChanged="tbMercenaryCode_TextChanged"/>
         <Button x:Name="bValidate" Content="Validate" Margin="10,0,10,40" VerticalAlignment="Bottom" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BValidate_Click"/>
         <Grid Margin="10,0,10,8" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>

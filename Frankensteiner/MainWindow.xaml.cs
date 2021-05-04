@@ -37,6 +37,7 @@ namespace Frankensteiner
         private ObservableCollection<MercenaryItem> _loadedMercenaries = new ObservableCollection<MercenaryItem>();
         private MercenaryItem _copiedMercenary;
         private bool changeDetected = false;
+        private UpdateChecker checkVersion = new UpdateChecker();
 
         public MainWindow()
         {
@@ -119,6 +120,8 @@ namespace Frankensteiner
             cbRestartMordhauMode.IsChecked = Properties.Settings.Default.cfgRestartMordhauMode;
             // Shortcuts
             cbShortcutKeys.IsChecked = Properties.Settings.Default.cfgShortcutsEnabled;
+            // Check for updates
+            cbUpdateOnStartup.IsChecked = Properties.Settings.Default.cfgUpdateOnStartup;
             #endregion
             #region Set Application Theme & Accent
             try
@@ -151,10 +154,12 @@ namespace Frankensteiner
                 metroWindow.Height = Properties.Settings.Default.appStartupSize.Y;
             }
             #endregion
-            #region Set App Version in About Tab
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            runVersion.Text = String.Format("{0} | Made by Dealman", fvi.FileVersion);
+            #region Version Stuff
+            runVersion.Text = String.Format("{0} | Made by Dealman", checkVersion.VERSION);
+            if (Properties.Settings.Default.cfgUpdateOnStartup == true)
+            {
+                checkVersion.CheckLatestVersion(checkVersion.Timeout, false);
+            }
             #endregion
             lbCharacterList.ItemsSource = _loadedMercenaries;
             RefreshMercenaries(); // Automatically load mercenaries on app startup
@@ -214,13 +219,12 @@ namespace Frankensteiner
         }
         #endregion
 
-        #region Save Window Position + Size + WindowState
+        #region Save Settings
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             Properties.Settings.Default.appStartupPos = new System.Drawing.Point(Convert.ToInt16(metroWindow.Left), Convert.ToInt16(metroWindow.Top));
             Properties.Settings.Default.appStartupSize = new System.Drawing.Point(Convert.ToInt16(metroWindow.ActualWidth), Convert.ToInt16(metroWindow.ActualHeight));
 
-            // Added new boolean property (isWindowMaximized) to fix weird behavior with appStartupSize and appStartupPos
             // There is an issue with saving a Minimized WindowState which is being worked on.
             if (this.WindowState == WindowState.Maximized)
             {
@@ -230,6 +234,7 @@ namespace Frankensteiner
             {
                 Properties.Settings.Default.isWindowMaximized = false;
             }
+
             Properties.Settings.Default.Save();
         }
         #endregion
@@ -502,7 +507,7 @@ namespace Frankensteiner
             // Try and resolve invalid mercenaries first
             if (_invalidMercs.Count > 0)
             {
-                if(System.Windows.MessageBox.Show(String.Format("Conflicts were detected for those mercenaries:\n\n{0}\n\nWould you like to try and resolve those manually? Choosing no will leave them unsaved.", string.Join("\n", _modifiedMercs.Select(x => String.Format("{0} [{1}]", x.Name, x.OriginalName)).ToArray())), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if(System.Windows.MessageBox.Show(String.Format("Conflicts were detected for these mercenaries:\n\n{0}\n\nWould you like to try and resolve them manually? Choosing \"No\" will leave them unsaved.", string.Join("\n", _modifiedMercs.Select(x => String.Format("{0} [{1}]", x.Name, x.OriginalName)).ToArray())), "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
                     // Users wants to resolve, try to resolve
                     if(ResolveAllMercenaryConflicts(_invalidMercs))
@@ -604,7 +609,7 @@ namespace Frankensteiner
             #region Alert User of Unsaved Mercenaries
             if (_failedToSave.Count > 0)
             {
-                System.Windows.MessageBox.Show(String.Format("{0} mercenaries were unable to save for an unknown reason. Those mercenaries are:\n\n{1}", _failedToSave.Count, string.Join("\n", _failedToSave.Select(x => x.Name).ToArray())), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(String.Format("{0} mercenaries were unable to save for an unknown reason.\n\n{1}", _failedToSave.Count, string.Join("\n", _failedToSave.Select(x => x.Name).ToArray())), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             #endregion
 
@@ -647,7 +652,7 @@ namespace Frankensteiner
                         if(_loadedMercenaries[i].isHordeMercenary)
                         {
                             _loadedMercenaries[i].FaceValues = importedMerc.FaceValues;
-                            _loadedMercenaries[i].ItemText = "Horde/BR - Unsaved Changes!";
+                            _loadedMercenaries[i].ItemText = "Horde Mercenary - Unsaved Changes!";
                             _loadedMercenaries[i].isOriginal = false;
                         }
                     }
@@ -975,17 +980,14 @@ namespace Frankensteiner
         private void CbNormalBackup_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgNormalBackup = cbNormalBackup.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbZipBackup_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgZIPBackup = cbZipBackup.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbLimitZipSize_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgZIPLimitActive = cbLimitZipSize.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbDisableMovies_Click(object sender, RoutedEventArgs e)
         {
@@ -996,32 +998,30 @@ namespace Frankensteiner
             Properties.Settings.Default.cfgAutoClose = cbAutoCloseGame.IsChecked.Value;
             cbRestartMordhau.IsEnabled = cbAutoCloseGame.IsChecked.Value;
             cbRestartMordhauMode.IsEnabled = cbAutoCloseGame.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbCheckConflicts_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgCheckConflict = cbCheckConflicts.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbConflictWarnings_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgConflictWarnings = cbConflictWarnings.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbRestartMordhau_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgRestartMordhau = cbRestartMordhau.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbRestartMordhauMode_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgRestartMordhauMode = cbRestartMordhauMode.IsChecked.Value;
-            Properties.Settings.Default.Save();
         }
         private void CbShortcutKeys_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.cfgShortcutsEnabled = cbShortcutKeys.IsChecked.Value;
-            Properties.Settings.Default.Save();
+        }
+        private void CbUpdateOnStartup_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.cfgUpdateOnStartup = cbUpdateOnStartup.IsChecked.Value;
         }
         #endregion
 
@@ -1050,7 +1050,7 @@ namespace Frankensteiner
                         UpdateContextItem(lbContextExport, String.Format("Export {0} to Clipboard", selectedMerc.Name), true);
                         // Copy Face
                         UpdateContextItem(lbContextCopyFace, String.Format("Copy Face Values from {0}", selectedMerc.Name), true);
-                        UpdateContextItem(lbContextCopyFormat, "Copy as Horde/BR Format", true);
+                        UpdateContextItem(lbContextCopyFormat, "Copy as Horde Format", true);
                         // Paste Face
                         if(selectedMerc != _copiedMercenary && _copiedMercenary != null)
                         {
@@ -1232,7 +1232,7 @@ namespace Frankensteiner
             }
             CheckForModifiedMercenaries();
         }
-        // Context Option: Copy as Horde/BR Format
+        // Context Option: Copy as Horde Format
         private void LbContextCopyFormat_Click(object sender, RoutedEventArgs e)
         {
             MercenaryItem selectedMerc = lbCharacterList.SelectedItem as MercenaryItem;
@@ -1258,10 +1258,11 @@ namespace Frankensteiner
         {
             Process.Start("https://www.reddit.com/r/Mordhau/comments/cll3kl/release_frankensteiner_v1200/");
         }
-        private void BMordhau_Click(object sender, RoutedEventArgs e)
+        // Mordhau forums are being discontinued
+        /*private void BMordhau_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://mordhau.com/forum/topic/19301/release-frankensteiner-create-asymmetric-faces/");
-        }
+        }*/
         private void BTitleSave_Click(object sender, RoutedEventArgs e)
         {
             List<MercenaryItem> _modifiedMercs = GetModifiedMercenaries();
@@ -1373,7 +1374,7 @@ namespace Frankensteiner
                         MercenaryItem _selectedMerc = lbCharacterList.SelectedItems[i] as MercenaryItem;
                         if (_selectedMerc != null)
                         {
-                            // Normal or Horde/BR Mercenary With Changes - Revert
+                            // Normal or Horde Mercenary With Changes - Revert
                             if (!_selectedMerc.isOriginal && !_selectedMerc.isImportedMercenary || !_selectedMerc.isOriginal && _selectedMerc.isHordeMercenary)
                             {
                                 _selectedMerc.RevertCurrentChanges();

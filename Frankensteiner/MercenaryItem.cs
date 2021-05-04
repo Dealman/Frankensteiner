@@ -278,8 +278,8 @@ namespace Frankensteiner
                         AppearanceString = rx.Match(OriginalEntry).Value.Replace("),F", ")");
                         rx = new Regex(@"FaceCustomization=\(.+\)\),");
                         FaceString = rx.Match(OriginalEntry).Value.Replace(")),", "))");
-                        rx = new Regex(@"SkillsCustomization=\(.+\)");
-                        SkillString = rx.Match(OriginalEntry).Value;
+                        rx = new Regex(@"SkillsCustomization=\(.+\),");
+                        SkillString = rx.Match(OriginalEntry).Value.Replace("),", ")");
                         rx = new Regex(@"Category=.+\)");
                         CategoryString = rx.Match(OriginalEntry).Value.Replace(")", ""); // only temporary
                         if (ParseFaceValues())
@@ -295,9 +295,9 @@ namespace Frankensteiner
                     rx = new Regex(@"^DefaultCharacterFace.+\)\)");
                     if (rx.IsMatch(OriginalEntry))
                     {
-                        OriginalName = "Horde/BR";
-                        Name = "Horde/BR";
-                        ItemText = "Horde/BR - Unsaved Changes!";
+                        OriginalName = "Horde Mercenary";
+                        Name = "Horde Mercenary";
+                        ItemText = "Horde Mercenary - Unsaved Changes!";
                         isHordeMercenary = true;
                         //rx = new Regex(@"FaceCustomization=\(.+\)\),");
                         FaceString = rx.Match(OriginalEntry).Value.Replace(")),", "))");

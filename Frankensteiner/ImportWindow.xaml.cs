@@ -38,7 +38,7 @@ namespace Frankensteiner
                 {
                     if(testMerc.isHordeMercenary)
                     {
-                        MessageBox.Show("Horde/BR Mercenary code successfully validated, you may now import this mercenary!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Horde Mercenary code successfully validated, you may now import this mercenary!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         bSave.IsEnabled = true;
                     } else {
                         MessageBox.Show("Mercenary code successfully validated, you may now import this mercenary!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -68,6 +68,15 @@ namespace Frankensteiner
             testMerc.isImportedMercenary = true;
             mainWindow.AddImportedMercenary(testMerc);
             this.DialogResult = true;
+        }
+
+        // Force revalidation of merc code after editing
+        private void tbMercenaryCode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(bSave.IsEnabled)
+            {
+                bSave.IsEnabled = false;
+            }
         }
     }
 }

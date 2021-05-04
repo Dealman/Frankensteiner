@@ -33,7 +33,7 @@ namespace Frankensteiner
                     parsedMercenaries.Add(match.Value);
                 }
 
-                // Also fetch the Horde/BR mercenary
+                // Also fetch the Horde mercenary
                 rx = new Regex(@"^DefaultCharacterFace.+\)\)", RegexOptions.Multiline);
                 if (rx.IsMatch(fileContents))
                 {
@@ -88,13 +88,13 @@ namespace Frankensteiner
                     rx = new Regex(@"FaceCustomization=\(.+\)\),");
                     mercenary.FaceString = rx.Match(parsedMercenary).Value.Replace(")),", "))");
                     // Parse the Skills
-                    rx = new Regex(@"SkillsCustomization=\(.+\)");
-                    mercenary.SkillString = rx.Match(parsedMercenary).Value;
+                    rx = new Regex(@"SkillsCustomization=\(.+\),");
+                    mercenary.SkillString = rx.Match(parsedMercenary).Value.Replace("),", ")");
                     rx = new Regex(@"Category=.+\)");
                     mercenary.CategoryString = rx.Match(parsedMercenary).Value.Replace(")", ""); // only temporary. have to wait and see what category is. possibly related to armory rework.
                 } else {
-                    mercenary.OriginalName = "Horde/BR";
-                    mercenary.Name = "Horde/BR";
+                    mercenary.OriginalName = "Horde Mercenary";
+                    mercenary.Name = "Horde Mercenary";
                     mercenary.ItemText = mercenary.Name;
                     // Parse the Face Customization
                     rx = new Regex(@"(DefaultCharacterFace=\(.+)");

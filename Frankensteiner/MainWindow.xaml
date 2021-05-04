@@ -14,7 +14,7 @@
     <!-- Right Window Commands -->
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button x:Name="bMordhau" Content="M" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Post on Mordhau Forums" Click="BMordhau_Click"/>
+            <!-- Button x:Name="bMordhau" Content="M" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Post on Mordhau Forums" Click="BMordhau_Click"/ -->
             <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github_alt}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to GitHub" Click="BGithub_Click"/>
             <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Reddit Thread" Click="BReddit_Click"/>
             <Button x:Name="bTitleSave" Visibility="Collapsed" Content="Save Mercenaries" Click="BTitleSave_Click"/>
@@ -179,6 +179,7 @@
                                 </ComboBox>
                                 <CheckBox x:Name="cbConflictWarnings" Content="Display Conflict Warnings" Margin="10,134,0,0" VerticalAlignment="Top" IsChecked="True" Click="CbConflictWarnings_Click"/>
                                 <CheckBox x:Name="cbShortcutKeys" Content="Enable Mercenary List Shortcut Keys" Margin="10,157,10,0" VerticalAlignment="Top" Click="CbShortcutKeys_Click"/>
+                                <CheckBox x:Name="cbUpdateOnStartup" Content="Automatically Check For Updates" Margin="10,180,10,0" VerticalAlignment="Top" IsChecked="True" Click="CbUpdateOnStartup_Click"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -193,7 +194,7 @@
                                 <LineBreak/>
                                 <Run x:Name="runVersion" Text=""/>
                                 <LineBreak/>
-                                <Run Text="This is a program that lets you customize the facial appearance of mercenaries in Mordhau beyond the game's typical limits. Typically, every face is symmetrical - to avoid horrible mostrosities from being made."/>
+                                <Run Text="Frankensteiner is a program that lets you customize the facial appearance of Mordhau mercenaries beyond the game's typical limits. Typically, every face in Mordhau is symmetrical to avoid horrible monstrosities from being made."/>
                             </Paragraph>
                             <Paragraph TextAlignment="Left">
                                 <LineBreak/>
