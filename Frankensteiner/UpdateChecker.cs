@@ -13,7 +13,7 @@ namespace Frankensteiner
 	public partial class UpdateChecker
 	{
 		public string VERSION { get; private set; }
-		private static string GITHUB_FILE = "https://raw.githubusercontent.com/Halen84/Frankensteiner/master/version.txt"; // Be sure to change Halen84 to Dealman
+		private static string GITHUB_FILE = "https://raw.githubusercontent.com/Dealman/Frankensteiner/master/version.txt"; // Be sure to change Halen84 to Dealman
 		private string EXE_FILE;
 		private string latestVersion;
 		public int Timeout = 500;
@@ -45,8 +45,8 @@ namespace Frankensteiner
 					{
 						if (MessageBox.Show("A new update is avaiable! Would you like to install it?", "Frankensteiner", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 						{
-							//Process.Start("https://github.com/Dealman/Frankensteiner/releases/latest");
-							Process.Start("https://github.com/Halen84/Frankensteiner/releases/latest");
+							Process.Start("https://github.com/Dealman/Frankensteiner/releases/latest");
+							//Process.Start("https://github.com/Halen84/Frankensteiner/releases/latest");
 							//Process.Start(EXE_FILE); // Instead of going to releases page, maybe just directly download the file. I probably wont add this.
 						}
 					}
@@ -107,7 +107,7 @@ namespace Frankensteiner
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
 			VERSION = fvi.FileVersion;
-			EXE_FILE = string.Format("https://github.com/Halen84/Frankensteiner/releases/download/{0}/Frankensteiner.exe", VERSION);
+			EXE_FILE = string.Format("https://github.com/Dealman/Frankensteiner/releases/download/{0}/Frankensteiner.exe", VERSION);
 		}
 
 	}
