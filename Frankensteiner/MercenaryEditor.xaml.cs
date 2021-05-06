@@ -34,22 +34,22 @@ namespace Frankensteiner
             Tuple<AppTheme, Accent> appStyle = ThemeManager.DetectAppStyle(Application.Current);
             if(appStyle.Item1.Name == "BaseDark")
             {
-                gBackground.Background = new SolidColorBrush(Color.FromRgb(69, 69, 69));
-                dgValueList.AlternatingRowBackground = new SolidColorBrush(Color.FromRgb(69, 69, 69));
+                gBackground.Background = new SolidColorBrush(Color.FromRgb(55, 55, 55));
+                dgValueList.AlternatingRowBackground = new SolidColorBrush(Color.FromRgb(55, 55, 55));
             } else {
                 gBackground.Background = new SolidColorBrush(Color.FromRgb(245, 245, 245));
-                dgValueList.AlternatingRowBackground = new SolidColorBrush(Color.FromRgb(245, 245, 245));
+                dgValueList.AlternatingRowBackground = new SolidColorBrush(Color.FromRgb(235, 235, 235));
             }
             #endregion
 
-            string[] nameValue =
-                {"Mouth - Middle", "Mouth - Edges", "Nose", "Left Eyebrow", "Unknown Value", "Right Eyebrow", "Right Eye",
-                "Unknown Value", "Unknown Value", "Unknown Value", "Mouth", "Left Eye", "Lips - Left Edge", "Lips - Right Edge",
-                "Chin", "Maxilar - Left", "Maxilar - Right", "Lower Lip", "Lower Lip - Left", "Lower Lip - Right", "Infraorbital Margin - Left",
+			      string[] nameValue =
+                {"Mouth - Middle", "Mouth - Edges", "Maxilla", "Left Eyebrow", "Unknown Value [1]", "Right Eyebrow", "Right Eye",
+                "Unknown Value [2]", "Unknown Value [3]", "Unknown Value [4]", "Mouth", "Left Eye", "Lips - Left Edge", "Lips - Right Edge",
+                "Chin", "Jaw - Left", "Jaw - Right", "Lower Lip", "Lower Lip - Left", "Lower Lip - Right", "Infraorbital Margin - Left",
                 "Medial Cleft", "Lip - Left", "Lip - Right", "Philtrum", "Nose - Tip", "Nose Bridge", "Nose Bridge - Top",
                 "Infraorbital Margin - Right", "Cheek - Left", "Cheek - Right", "Left Eyebrow - Inner", "Right Eyebrow - Inner", "Left Eyebrow - Middle", "Right Eyebrow - Middle",
-                "Left Eyebrow - Outter", "Right Eyebrow - Outter", "Ear - Left", "Ear - Right", "Unknown Value", "Unknown Value", "Left Eyelid - Top",
-                "Left Eyelid - Bottom", "Unknown Value", "Unknown Value", "Right Eyelid - Top", "Right Eyelid - Bottom", "Cheekbone - Left", "Cheekbone - Right"};
+                "Left Eyebrow - Outter", "Right Eyebrow - Outter", "Ear - Left", "Ear - Right", "Unknown Value [5]", "Unknown Value [6]", "Left Eyelid - Top",
+                "Left Eyelid - Bottom", "Unknown Value [7]", "Unknown Value [8]", "Right Eyelid - Top", "Right Eyelid - Bottom", "Cheekbone - Left", "Cheekbone - Right"};
 
             // Create 49 sliders, it consists of 3 separate sliders - one for each value
             dgValueList.ItemsSource = _sliders;
