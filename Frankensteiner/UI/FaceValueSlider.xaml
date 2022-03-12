@@ -23,7 +23,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <!-- Description Label -->
-        <Label x:Name="lDescription" Content="{Binding Path=Description, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="9" Grid.Row="0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Background="{x:Null}"/>
+        <Label x:Name="lDescription" Content="{Binding Path=Description, UpdateSourceTrigger=PropertyChanged}" Foreground="{Binding Path=Foreground}" Grid.ColumnSpan="9" Grid.Row="0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Background="{x:Null}"/>
         <!-- Translation -->
         <Label Content="0" Grid.Row="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right"/>
         <Slider x:Name="sliderTranslation" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}" Value="{Binding Path=Translation, UpdateSourceTrigger=PropertyChanged}" Maximum="65535" TickFrequency="0" SmallChange="1" AutoToolTipPlacement="TopLeft" IsMoveToPointEnabled="True"/>

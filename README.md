@@ -15,7 +15,7 @@ This is a program to aid in the process of creating asymmetric faces for your Mo
 If you don't want to build it yourself, you can download the latest version from the [Releases](https://github.com/Dealman/Frankensteiner/releases) page.
 
 ### Prerequisites
-In order to use this program you need to at least have **.NET Framework 4.5.0** or above.
+In order to use this program you need to at least have **.NET Framework 4.7.2** or above.
 
 ### Installing
 There's no installation required, it's a simple executable which you can put wherever you find appropriate.

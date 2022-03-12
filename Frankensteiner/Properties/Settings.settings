@@ -5,9 +5,6 @@
     <Setting Name="appTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Dark</Value>
     </Setting>
-    <Setting Name="appAccent" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Blue</Value>
-    </Setting>
     <Setting Name="appStartupPos" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">0, 0</Value>
     </Setting>
@@ -61,6 +58,9 @@
     </Setting>
     <Setting Name="cfgUpdateOnStartup" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="appAccent" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Cyan</Value>
     </Setting>
   </Settings>
 </SettingsFile>

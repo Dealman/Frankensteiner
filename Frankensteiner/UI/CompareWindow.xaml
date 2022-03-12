@@ -6,7 +6,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Frankensteiner"
         mc:Ignorable="d"
-        Title="Compare Window (EXPERIMENTAL)" Height="400" Width="900" TitleCaps="False" WindowStartupLocation="CenterOwner">
+        Title="Compare Window (EXPERIMENTAL)" Height="400" Width="900" TitleCharacterCasing="Normal" WindowStartupLocation="CenterOwner">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button x:Name="bHowUse" Content="How to Use?" Click="BHowUse_Click" />

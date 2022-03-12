@@ -30,75 +30,40 @@ namespace Frankensteiner
         private string _originalName = "";
         public string OriginalName
         {
-            get { return _originalName; }
-            set
-            {
-                if (value != _originalName)
-                {
-                    _originalName = value;
-                    OnPropertyChanged(nameof(OriginalName));
-                }
-            }
+            get => _originalName;
+            set => SetField(ref _originalName, value);
         }
         #endregion
         #region Original Face Values
         private List<FaceValue> _originalFaceValues = new List<FaceValue>();
         public List<FaceValue> OriginalFaceValues
         {
-            get { return _originalFaceValues; }
-            set
-            {
-                if (!_originalFaceValues.SequenceEqual(value))
-                {
-                    _originalFaceValues = value;
-                    OnPropertyChanged(nameof(OriginalFaceValues));
-                }
-            }
+            get => _originalFaceValues;
+            set => SetField(ref _originalFaceValues, value);
         }
         #endregion
         #region Face Values
         private List<FaceValue> _faceValues = new List<FaceValue>();
         public List<FaceValue> FaceValues
         {
-            get { return _faceValues; }
-            set
-            {
-                if (!_faceValues.SequenceEqual(value))
-                {
-                    _faceValues = value;
-                    OnPropertyChanged(nameof(FaceValues));
-                }
-            }
+            get => _faceValues;
+            set => SetField(ref _faceValues, value);
         }
         #endregion
         #region Original Config Entry
         private string _originalEntry = "";
         public string OriginalEntry
         {
-            get { return _originalEntry; }
-            set
-            {
-                if (value != _originalEntry)
-                {
-                    _originalEntry = value;
-                    OnPropertyChanged(nameof(OriginalEntry));
-                }
-            }
+            get => _originalEntry;
+            set => SetField(ref _originalEntry, value);
         }
         #endregion
         #region Import Code
         private string _importCode = "";
         public string ImportCode
         {
-            get { return _importCode; }
-            set
-            {
-                if (value != _importCode)
-                {
-                    _importCode = value;
-                    OnPropertyChanged(nameof(ImportCode));
-                }
-            }
+            get => _importCode;
+            set => SetField(ref _importCode, value);
         }
         #endregion
         // ListBoxItem Appearance Properties
@@ -106,30 +71,16 @@ namespace Frankensteiner
         private string _itemText = "";
         public string ItemText
         {
-            get { return _itemText; }
-            set
-            {
-                if (value != _itemText)
-                {
-                    _itemText = value;
-                    OnPropertyChanged(nameof(ItemText));
-                }
-            }
+            get => _itemText;
+            set => SetField(ref _itemText, value);
         }
         #endregion
         #region Background Colour
         private SolidColorBrush _bgColour;
         public SolidColorBrush BackgroundColour
         {
-            get { return _bgColour; }
-            set
-            {
-                if (value != _bgColour)
-                {
-                    _bgColour = value;
-                    OnPropertyChanged(nameof(BackgroundColour));
-                }
-            }
+            get => _bgColour;
+            set => SetField(ref _bgColour, value);
         }
         #endregion
         // Mercenary Parsed Strings
@@ -137,92 +88,51 @@ namespace Frankensteiner
         private string _name = "";
         public string Name
         {
-            get { return _name; }
-            set
-            {
-                if (value != _name)
-                {
-                    _name = value;
-                    OnPropertyChanged(nameof(Name));
-                }
-            }
+            get => _name;
+            set => SetField(ref _name, value);
         }
         #endregion
         #region Gear String
         private string _gearString = "";
         public string GearString
         {
-            get { return _gearString; }
-            set
-            {
-                if (value != _gearString)
-                {
-                    _gearString = value;
-                    OnPropertyChanged(nameof(GearString));
-                }
-            }
+            get => _gearString;
+            set => SetField(ref _gearString, value);
         }
         #endregion
         #region Appearance String
         private string _appearanceString = "";
         public string AppearanceString
         {
-            get { return _appearanceString; }
-            set
-            {
-                if (value != _appearanceString)
-                {
-                    _appearanceString = value;
-                    OnPropertyChanged(nameof(AppearanceString));
-                }
-            }
+            get => _appearanceString;
+            set => SetField(ref _appearanceString, value);
         }
         #endregion
         #region Face String
         private string _faceString = "";
         public string FaceString
         {
-            get { return _faceString; }
-            set
-            {
-                if (value != _faceString)
-                {
-                    _faceString = value;
-                    OnPropertyChanged(nameof(FaceString));
-                }
-            }
+            get => _faceString;
+            set => SetField(ref _faceString, value);
         }
         #endregion
         #region Skill String
         private string _skillString = "";
         public string SkillString
         {
-            get { return _skillString; }
-            set
-            {
-                if (value != _skillString)
-                {
-                    _skillString = value;
-                    OnPropertyChanged(nameof(SkillString));
-                }
-            }
+            get => _skillString;
+            set => SetField(ref _skillString, value);
         }
         #endregion
         #region Category String
         private string _categoryString = "";
         public string CategoryString
         {
-            get { return _categoryString; }
-            set
-            {
-                if (value != _categoryString)
-                {
-                    _categoryString = value;
-                    OnPropertyChanged(nameof(CategoryString));
-                }
-            }
+            get => _categoryString;
+            set => SetField(ref _categoryString, value);
         }
         #endregion
+
         // Logic Fields
         public int index = 0;
         public bool isImportedMercenary = false;
@@ -230,11 +140,13 @@ namespace Frankensteiner
         public bool isHordeMercenary = false;
         public bool isOriginal = true;
         public bool isBeingDeleted = false;
+        public bool isDuplicated = false;
 
         public MercenaryItem()
         {
 
         }
+
         public MercenaryItem(string originalCode)
         {
             OriginalEntry = originalCode;
@@ -254,17 +166,17 @@ namespace Frankensteiner
                 }
                 return true;
             } else {
-                MessageBox.Show(String.Format("Unable to process face values for mercenary. Count mismatch - expected a total of 147 values. Got {0}.", rxMatches.Count), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Unable to process face values for \"{Name}\".\n\nCount mismatch. Expected a total of 147 values, got {rxMatches.Count.ToString()}.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
         }
+
         public bool ValidateMercenaryCode()
         {
             // This is just a nasty copy and paste because I'm lazy. See ConfigParser.cs for info
             try
             {
-                //Regex rx = new Regex(@"("".+"")"); //new Regex("\"(.+)\"");
-                Regex rx = new Regex("\\\"(.*?)\\\"");
+                Regex rx = new Regex("\"(.*?)\"");
                 if (rx.IsMatch(OriginalEntry))
                 {
                     Name = rx.Match(OriginalEntry).Value.Replace("\"", "");
@@ -281,10 +193,16 @@ namespace Frankensteiner
                         rx = new Regex(@"SkillsCustomization=\(.+\),");
                         SkillString = rx.Match(OriginalEntry).Value.Replace("),", ")");
                         rx = new Regex(@"Category=.+\)");
-                        CategoryString = rx.Match(OriginalEntry).Value.Replace(")", ""); // only temporary
+                        CategoryString = rx.Match(OriginalEntry).Value.Replace(")", "");
                         if (ParseFaceValues())
                         {
-                            return true;
+                          if (!Name.Contains(GearString))
+                          {
+                              return true;
+                          } else {
+                              MessageBox.Show("Lost a closing quote while trying to validate a mercenary!\n\nMake sure you have double quotes (\") around the mercenary name and category via mercenary code!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                              return false;
+                          }
                         } else {
                             return false;
                         }
@@ -315,6 +233,7 @@ namespace Frankensteiner
                 return false;
             }
         }
+
         public void UpdateItemText()
         {
             // Imported Mercenaries
@@ -322,9 +241,9 @@ namespace Frankensteiner
             {
                 if (isOriginal)
                 {
-                    ItemText = String.Format("{0} - Imported Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                    ItemText = String.Format("{0} - Imported Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
                 } else {
-                    ItemText = String.Format("{0} - Imported & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                    ItemText = String.Format("{0} - Imported & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
                 }
             }
             // New Mercenaries
@@ -332,12 +251,12 @@ namespace Frankensteiner
             {
                 if (isOriginal)
                 {
-                    ItemText = String.Format("{0} - New Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                    ItemText = String.Format("{0} - New Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
                 } else {
-                    ItemText = String.Format("{0} - New & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                    ItemText = String.Format("{0} - New & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
                 }
             }
-            // Horde/BR Mercenary
+            // Horde Mercenary
             if (isHordeMercenary)
             {
                 if (isOriginal)
@@ -352,17 +271,28 @@ namespace Frankensteiner
             {
                 if (isOriginal)
                 {
-                    ItemText = String.Format("{0}", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                    ItemText = String.Format("{0}", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
                 } else {
-                    ItemText = String.Format("{0} - Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                    ItemText = String.Format("{0} - Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
                 }
             }
             // Deletion
             if(isBeingDeleted)
             {
-                ItemText = String.Format("{0} - MARKED FOR DELETION", ((Name != OriginalName) ? String.Format("{0}->{1}", OriginalName, Name) : Name));
+                ItemText = String.Format("{0} - MARKED FOR DELETION", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
             }
+            // Duplicated
+            /*if (isDuplicated)
+            {
+                if (isOriginal)
+                {
+                    ItemText = String.Format("{0} - Duplicated Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
+                } else {
+                    ItemText = String.Format("{0} - Duplicated & Modified Mercenary - UNSAVED", ((Name != OriginalName) ? String.Format("{0} --> {1}", OriginalName, Name) : Name));
+                }
+            }*/
         }
+
         public void SetAsOriginal()
         {
             OriginalName = Name;
@@ -371,9 +301,11 @@ namespace Frankensteiner
             OriginalFaceValues.AddRange(FaceValues);
             isImportedMercenary = false;
             isNewMercenary = false;
+            //isDuplicated = false;
             isOriginal = true;
             UpdateItemText();
         }
+
         public void RevertCurrentChanges()
         {
             Name = OriginalName;
@@ -382,6 +314,7 @@ namespace Frankensteiner
             isOriginal = true;
             UpdateItemText();
         }
+
         public void Frankenstein()
         {
             Random rnd = new Random(Guid.NewGuid().GetHashCode());
@@ -392,6 +325,7 @@ namespace Frankensteiner
             isOriginal = false;
             UpdateItemText();
         }
+
         public void Randomize()
         {
             Random rnd = new Random(Guid.NewGuid().GetHashCode());

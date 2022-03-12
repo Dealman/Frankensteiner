@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:fa="clr-namespace:FontAwesome.Net;assembly=FontAwesome.Net"
         mc:Ignorable="d"
-        Title="Frankensteiner" Height="450" Width="600" TitleCaps="False" MinWidth="600" MinHeight="450" ResizeMode="CanResizeWithGrip" Closing="MetroWindow_Closing">
+        Title="Frankensteiner" Height="450" Width="600" MinWidth="600" MinHeight="450" TitleCharacterCasing="Normal" ResizeMode="CanResizeWithGrip" Closing="MetroWindow_Closing">
     <Controls:MetroWindow.Resources>
         <FontFamily x:Key="FontAwesome">pack://application:,,,/FontAwesome.Net;component/Fonts/#FontAwesome</FontFamily>
     </Controls:MetroWindow.Resources>
@@ -15,44 +15,38 @@
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <!-- Button x:Name="bMordhau" Content="M" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Post on Mordhau Forums" Click="BMordhau_Click"/ -->
-            <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github_alt}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to GitHub" Click="BGithub_Click"/>
-            <Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Link to Reddit Thread" Click="BReddit_Click"/>
+            <Button x:Name="bGithub" Content="{x:Static fa:FontAwesome.fa_github}" FontFamily="{StaticResource FontAwesome}" FontSize="20" ToolTip="Frankensteiner GitHub" Click="BGithub_Click"/>
+            <!-- Button x:Name="bReddit" Content="{x:Static fa:FontAwesome.fa_reddit_alien}" FontFamily="{StaticResource FontAwesome}" FontSize="16" ToolTip="Frankensteiner Reddit Thread" Click="BReddit_Click"/ -->
             <Button x:Name="bTitleSave" Visibility="Collapsed" Content="Save Mercenaries" Click="BTitleSave_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <!-- Flyouts -->
     <Controls:MetroWindow.Flyouts>
-        <Controls:FlyoutsControl>
-                        <Controls:Flyout x:Name="toolsFlyout" Header="Additional Tools" Position="Bottom" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Controls:FlyoutsControl}, Path=ActualHeight}">
-                            <Grid Margin="0,10">
-                                <Label Content="Import New Mercenaries" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center"/>
-                                <Grid Margin="10,41,10,0" VerticalAlignment="Top">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="bImportSingle" Content="Import Single" VerticalAlignment="Top" Margin="0,0,2,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="BImportSingle_Click"/>
-                                    <Button x:Name="bImportMultiple" Content="Import Multiple" VerticalAlignment="Top" Margin="2,0,0,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Grid.Column="1" IsEnabled="False" Focusable="False" Click="BImportMultiple_Click"/>
-                                </Grid>
-                                <Label Content="Create a New Mercenary" Margin="10,73,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center"/>
-                                <Button x:Name="bCreateMercenary" Content="Create" HorizontalAlignment="Right" Margin="0,104,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" IsEnabled="False" Click="BCreateMercenary_Click"/>
-                                <TextBox x:Name="tbMercenaryName" Margin="10,104,57,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Enter a Name..." IsTabStop="False" TextChanged="TbMercenaryName_TextChanged"/>
-                                <Controls:NumericUpDown x:Name="nudMassNumber" Margin="10,166,0,0" Minimum="1" Maximum="255" Value="10" VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False"/>
-                                <Label Content="Mass Creator" Margin="10,135,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" ToolTip="Useful for creating a lot of randomized faces. Then simply grab the one you like the most."/>
-                                <Button x:Name="bMassCreate" Content="Create Mercenaries" Margin="85,166,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="BMassCreate_Click"/>
-                                <Grid Margin="10,198,10,0" VerticalAlignment="Top">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <RadioButton x:Name="rbMassDefault" Content="Default Faces" FontSize="10" VerticalAlignment="Top" Focusable="False"/>
-                                    <RadioButton x:Name="rbMassRandom" Content="Random Faces" VerticalAlignment="Top" Grid.Column="1" FontSize="10" Focusable="False"/>
-                                    <RadioButton x:Name="rbMassFrankenstein" Content="Frankenstein Faces" Grid.Column="2" FontSize="10" VerticalAlignment="Top" IsChecked="True" Focusable="False"/>
-                                </Grid>
-                            </Grid>
-                        </Controls:Flyout>
-                    </Controls:FlyoutsControl>
+        <Controls:FlyoutsControl Margin="0,30,0,0">
+            <Controls:Flyout x:Name="toolsFlyout" Position="Bottom" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Controls:FlyoutsControl}, Path=ActualHeight}">
+                <Grid Margin="0,10">
+                    <Label Content="Import New Mercenaries" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+                    <!--Button x:Name="bImportSingle" Content="Import Mercenary" VerticalAlignment="Top" Margin="0,0,2,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" ToolTip="Import mercenary via mercenary code" Click="BImportSingle_Click"/ -->
+                    <Button x:Name="bImportMercenaries" Content="Import Mercenaries" VerticalAlignment="Top" Margin="10,40,10,0" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="BImportMercs_Click" ToolTip="Import mercenaries via mercenary code"/>
+                    <Label Content="Create a New Mercenary" Margin="10,73,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="bCreateMercenary" Content="Create" HorizontalAlignment="Right" Margin="0,104,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" IsEnabled="False" Click="BCreateMercenary_Click"/>
+                    <TextBox x:Name="tbMercenaryName" Margin="10,104,57,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Enter a Name..." IsTabStop="False" TextChanged="TbMercenaryName_TextChanged"/>
+                    <Controls:NumericUpDown x:Name="nudMassNumber" Margin="10,166,0,0" Minimum="1" Maximum="255" Value="10" VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False"/>
+                    <Label Content="Mass Creator" Margin="10,135,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" ToolTip="Useful for creating a lot of randomized faces. Then simply grab the one you like the most."/>
+                    <Button x:Name="bMassCreate" Content="Create Mercenaries" Margin="85,166,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="BMassCreate_Click"/>
+                    <Grid Margin="10,198,10,0" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton x:Name="rbMassDefault" Content="Default Face" FontSize="12" VerticalAlignment="Top" Focusable="False"/>
+                        <RadioButton x:Name="rbMassRandom" Content="Random Face" VerticalAlignment="Top" Grid.Column="1" FontSize="12" Focusable="False"/>
+                        <RadioButton x:Name="rbMassFrankenstein" Content="Frankensteined Face" Grid.Column="2" FontSize="12" VerticalAlignment="Top" IsChecked="True" Focusable="False"/>
+                    </Grid>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
     </Controls:MetroWindow.Flyouts>
     <!-- Actual Window -->
     <Grid x:Name="gWindowBG" Background="#FF454545">
@@ -62,18 +56,21 @@
                     <Grid Margin="0,0,0,0">
                         <ListBox x:Name="lbCharacterList" MouseDoubleClick="LbCharacterList_MouseDoubleClick" AlternationCount="2" Margin="10,10,10,74" IsEnabled="False" SelectionMode="Extended" BorderThickness="2" BorderBrush="{Binding BorderBrush, ElementName=dgDummy}" KeyUp="LbCharacterList_KeyUp">
                             <ListBox.ContextMenu>
-                                <ContextMenu x:Name="lbContextMenu" Opened="lbContextMenu_Opened">
+                                <ContextMenu x:Name="lbContextMenu" Opened="lbContextMenu_Opened" Closed="lbContextMenu_Closed">
                                     <MenuItem x:Name="lbContextEdit" Header="Edit Mercenary" IsEnabled="False" FontSize="12">
                                         <MenuItem x:Name="lbContextQuickEdit" Header="Open in Mercenary Editor" Click="LbContextQuickEdit_Click"/>
                                         <Separator/>
                                         <MenuItem x:Name="lbContextQuickFrankenstein" Header="Frankenstein" Click="LbContextQuickFrankenstein_Click"/>
                                         <MenuItem x:Name="lbContextQuickRandomize" Header="Randomize" Click="LbContextQuickRandomize_Click"/>
+                                        <Separator/>
+                                        <TextBox Name="lbChangeCategory" Controls:TextBoxHelper.Watermark="Change Category" IsTabStop="True" TextChanged="lbChangeCategory_TextChanged"/>
                                     </MenuItem>
                                     <MenuItem x:Name="lbContextSave" Header="Save Changes to Mercenary" IsEnabled="False" FontSize="12" Click="LbContextSave_Click"/>
                                     <MenuItem x:Name="lbContextRevert" Header="Revert Changes to Mercenary" IsEnabled="False" FontSize="12" Click="LbContextRevert_Click"/>
                                     <Separator/>
                                     <MenuItem x:Name="lbContextCopyFace" Header="Copy Face Values" IsEnabled="False" FontSize="12" Click="LbContextCopyFace_Click">
-                                        <MenuItem x:Name="lbContextCopyFormat" Header="Copy as Horde/BR Format" IsEnabled="False" FontSize="12" Click="LbContextCopyFormat_Click"/>
+                                        <MenuItem x:Name="lbContextCopyFormat" Header="Copy Face Values" IsEnabled="False" FontSize="12" Click="LbContextCopyFormat_Click"/>
+                                        <MenuItem x:Name="lbContextCopyHordeFormat" Header="Copy as Horde Format" IsEnabled="False" FontSize="12" Click="LbContextCopyHordeFormat_Click"/>
                                     </MenuItem>
                                     <MenuItem x:Name="lbContextPasteFace" Header="Paste Face Values" IsEnabled="False" FontSize="12" Click="LbContextPasteFace_Click"/>
                                     <Separator/>
@@ -84,7 +81,7 @@
                             </ListBox.ContextMenu>
 
                             <ListBox.Resources>
-                                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MetroListBoxItem}">
+                                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
                                     <Setter Property="Content" Value="{Binding Path=ItemText, UpdateSourceTrigger=PropertyChanged}"/>
                                     <!-- Disabled for now, will be colourized in a later version
                                     <Style.Triggers>
@@ -116,30 +113,30 @@
                         <TabItem Header="Config">
                             <Grid x:Name="gConfigBG" Background="#FF454545">
                                 <Label Content="Game.ini Path" Margin="10,10,10,0" VerticalAlignment="Top" Width="520" HorizontalContentAlignment="Center" ToolTip="This is necessary in order to read and modify your characters."/>
-                                <TextBox x:Name="tbConfigPath" Margin="10,41,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Game.ini..." MinWidth="440" IsReadOnly="True" TextChanged="TbConfigPath_TextChanged" MinHeight="27"/>
+                                <TextBox x:Name="tbConfigPath" Margin="10,41,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Game.ini..." MinWidth="440" IsReadOnly="True" Focusable="False" TextChanged="TbConfigPath_TextChanged" MinHeight="27"/>
                                 <Button x:Name="bBrowseConfigPath" Content="..." Margin="0,41,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" HorizontalAlignment="Right" Click="BBrowseConfigPath_Click" MinWidth="20" MinHeight="27" MouseRightButtonUp="BBrowseConfigPath_MouseRightButtonUp" ToolTip="Left-click to choose folder. Right-click to open the folder if one has been selected."/>
-                                <Label Content="Mordhau Path" Margin="10,96,10,0" VerticalAlignment="Top" Width="520" HorizontalContentAlignment="Center" ToolTip="This is used to disable startup movies. Can be ignored if wanted."/>
-                                <TextBox x:Name="tbMordhauPath" Margin="10,127,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Mordhau Folder..." MinWidth="440" IsReadOnly="True" MinHeight="27" TextChanged="TbMordhauPath_TextChanged"/>
+                                <Label Content="Mordhau Path" Margin="10,96,10,0" VerticalAlignment="Top" Width="520" HorizontalContentAlignment="Center" ToolTip="This is used to disable startup movies and restart Mordhau. Not required."/>
+                                <TextBox x:Name="tbMordhauPath" Margin="10,127,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Browse to Mordhau Directory..." MinWidth="440" IsReadOnly="True" MinHeight="27" Focusable="False" TextChanged="TbMordhauPath_TextChanged"/>
                                 <Button x:Name="bBrowseMordhauPath" Content="..." HorizontalAlignment="Right" Margin="0,127,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" MinWidth="20" Click="BBrowseMordhauPath_Click" MinHeight="27" MouseRightButtonUp="BBrowseMordhauPath_MouseRightButtonUp" ToolTip="Left-click to choose folder. Right-click to open the folder if one has been selected."/>
-                                <CheckBox x:Name="cbCheckConflicts" Content="Automatically Check for Conflicts" Margin="10,73,10,0" VerticalAlignment="Top" Click="CbCheckConflicts_Click"/>
+                                <CheckBox x:Name="cfgCheckConflict" Content="Automatically Check for Conflicts" Margin="10,73,10,0" VerticalAlignment="Top" Click="CbCheckBox_Click"/>
                                 <CheckBox x:Name="cbAutoCloseGame" Content="Automatically Close Mordhau Before Saving" Margin="10,159,10,0" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" Click="CbAutoCloseGame_Click" IsEnabled="False"/>
                                 <CheckBox x:Name="cbDisableMovies" Content="Disable Startup Movies" Margin="10,232,10,0" VerticalAlignment="Top" Click="CbDisableMovies_Click" IsEnabled="False"/>
-                                <CheckBox x:Name="cbRestartMordhau" Content="Automatically Start Mordhau After Saving" Margin="32,182,10,0" VerticalAlignment="Top" Click="CbRestartMordhau_Click" IsEnabled="{Binding IsChecked, ElementName=cbAutoCloseGame}" IsChecked="True"/>
-                                <CheckBox x:Name="cbRestartMordhauMode" Content="But Only if Mordhau Was Already Running" Margin="52,205,10,0" VerticalAlignment="Top" Click="CbRestartMordhauMode_Click" IsEnabled="{Binding IsChecked, ElementName=cbRestartMordhau}" IsChecked="True"/>
+                                <CheckBox x:Name="cfgRestartMordhau" Content="Automatically Start Mordhau After Saving" Margin="32,182,10,0" VerticalAlignment="Top" Click="CbCheckBox_Click" IsEnabled="{Binding IsChecked, ElementName=cbAutoCloseGame}" IsChecked="True"/>
+                                <CheckBox x:Name="cfgRestartMordhauMode" Content="But Only If Mordhau Was Already Running" Margin="52,205,10,0" VerticalAlignment="Top" Click="CbCheckBox_Click" IsEnabled="{Binding IsChecked, ElementName=cfgRestartMordhau}" IsChecked="True"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="Backups">
                             <Grid x:Name="gBackupsBG" Background="#FF454545">
                                 <GroupBox Header="Backup System" Margin="10" Controls:ControlsHelper.ContentCharacterCasing="Normal">
                                     <Grid x:Name="gBackupBoxBG">
-                                        <CheckBox x:Name="cbNormalBackup" Content="Normal Backup Mode" Margin="10,72,10,0" VerticalAlignment="Top" IsEnabled="False" IsChecked="True" Click="CbNormalBackup_Click"/>
-                                        <CheckBox x:Name="cbZipBackup" Content="Compress Backups Into a ZIP Archive" Margin="10,95,10,0" VerticalAlignment="Top" Click="CbZipBackup_Click" IsEnabled="False"/>
+                                        <CheckBox x:Name="cfgNormalBackup" Content="Normal Backup Mode" Margin="10,72,10,0" VerticalAlignment="Top" IsEnabled="False" IsChecked="True" Click="CbCheckBox_Click"/>
+                                        <CheckBox x:Name="cfgZIPBackup" Content="Compress Backups Into a ZIP Archive" Margin="10,95,10,0" VerticalAlignment="Top" Click="CbCheckBox_Click" IsEnabled="False"/>
                                         <Label Content="Backup Destination" Margin="10,10,10,0" VerticalAlignment="Top" Width="490" HorizontalContentAlignment="Center"/>
-                                        <TextBox x:Name="tbBackupPath" Margin="10,41,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Choose Destination Folder..." IsReadOnly="True" TextChanged="TbBackupPath_TextChanged"/>
+                                        <TextBox x:Name="tbBackupPath" Margin="10,41,35,0" TextWrapping="Wrap" VerticalAlignment="Top" Controls:TextBoxHelper.Watermark="Choose Destination Folder..." IsReadOnly="True" Focusable="False" TextChanged="TbBackupPath_TextChanged"/>
                                         <Button x:Name="bBrowseBackupPath" Content="..." HorizontalAlignment="Right" Margin="0,41,10,0" VerticalAlignment="Top" Controls:ControlsHelper.ContentCharacterCasing="Normal" Click="BBrowseBackupPath_Click" MouseRightButtonUp="BBrowseBackupPath_MouseRightButtonUp" ToolTip="Left-click to choose folder. Right-click to open the folder if one has been selected."/>
-                                        <CheckBox x:Name="cbLimitZipSize" Content="Limit ZIP Archive to" Margin="10,120,0,0" VerticalAlignment="Top" Height="28" IsEnabled="{Binding IsChecked, ElementName=cbZipBackup}" Width="130" HorizontalAlignment="Left" Click="CbLimitZipSize_Click"/>
-                                        <Controls:NumericUpDown x:Name="nudZipLimit" Minimum="0" Maximum="65535" Margin="145,119,277,0" VerticalAlignment="Top" IsEnabled="{Binding IsChecked, ElementName=cbZipBackup}" Height="28" HasDecimals="False" NumericInputMode="Numbers" Speedup="False" ValueChanged="NudZipLimit_ValueChanged"/>
-                                        <Label x:Name="lLimitZipSuffix" Content="Files." Margin="0,120,236,0" VerticalAlignment="Top" Height="28" IsEnabled="{Binding IsChecked, ElementName=cbZipBackup}" HorizontalAlignment="Right"/>
+                                        <CheckBox x:Name="cfgZIPLimitActive" Content="Limit ZIP Archive to" Margin="10,120,0,0" VerticalAlignment="Top" Height="28" IsEnabled="{Binding IsChecked, ElementName=cfgZIPBackup}" Width="130" HorizontalAlignment="Left" Click="CbCheckBox_Click"/>
+                                        <Controls:NumericUpDown x:Name="nudZipLimit" Minimum="0" Maximum="65535" Margin="145,119,277,0" VerticalAlignment="Top" IsEnabled="{Binding IsChecked, ElementName=cfgZIPBackup}" Height="28" NumericInputMode="Numbers" Speedup="False" ValueChanged="NudZipLimit_ValueChanged"/>
+                                        <Label x:Name="lLimitZipSuffix" Content="Files." Margin="0,120,236,0" VerticalAlignment="Top" Height="28" IsEnabled="{Binding IsChecked, ElementName=cfgZIPBackup}" HorizontalAlignment="Right"/>
                                     </Grid>
                                 </GroupBox>
                             </Grid>
@@ -151,17 +148,17 @@
                                     <ComboBoxItem Content="Dark"/>
                                     <ComboBoxItem Content="Light"/>
                                 </ComboBox>
-                                <Label Content="Accents" Margin="10,72,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center"/>
+                                <Label Content="Accent" Margin="10,72,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center"/>
                                 <ComboBox x:Name="cbAppAccents" Margin="10,103,10,0" VerticalAlignment="Top" SelectionChanged="CbAppAccents_SelectionChanged">
+                                    <ComboBoxItem Content="Cyan"/>
                                     <ComboBoxItem Content="Red"/>
                                     <ComboBoxItem Content="Green"/>
-                                    <ComboBoxItem Content="Blue"/>
                                     <ComboBoxItem Content="Purple"/>
                                     <ComboBoxItem Content="Orange"/>
                                     <ComboBoxItem Content="Lime"/>
                                     <ComboBoxItem Content="Emerald"/>
                                     <ComboBoxItem Content="Teal"/>
-                                    <ComboBoxItem Content="Cyan"/>
+                                    <ComboBoxItem Content="Blue"/>
                                     <ComboBoxItem Content="Cobalt"/>
                                     <ComboBoxItem Content="Indigo"/>
                                     <ComboBoxItem Content="Violet"/>
@@ -177,9 +174,9 @@
                                     <ComboBoxItem Content="Taupe"/>
                                     <ComboBoxItem Content="Sienna"/>
                                 </ComboBox>
-                                <CheckBox x:Name="cbConflictWarnings" Content="Display Conflict Warnings" Margin="10,134,0,0" VerticalAlignment="Top" IsChecked="True" Click="CbConflictWarnings_Click"/>
-                                <CheckBox x:Name="cbShortcutKeys" Content="Enable Mercenary List Shortcut Keys" Margin="10,157,10,0" VerticalAlignment="Top" Click="CbShortcutKeys_Click"/>
-                                <CheckBox x:Name="cbUpdateOnStartup" Content="Automatically Check For Updates" Margin="10,180,10,0" VerticalAlignment="Top" IsChecked="True" Click="CbUpdateOnStartup_Click"/>
+                                <CheckBox x:Name="cfgConflictWarnings" Content="Display Conflict Warnings" Margin="10,134,0,0" VerticalAlignment="Top" IsChecked="True" Click="CbCheckBox_Click"/>
+                                <CheckBox x:Name="cfgShortcutsEnabled" Content="Enable Mercenary List Shortcut Keys" Margin="10,157,10,0" VerticalAlignment="Top" Click="CbCheckBox_Click"/>
+                                <CheckBox x:Name="cfgUpdateOnStartup" Content="Automatically Check For Updates" Margin="10,180,10,0" VerticalAlignment="Top" IsChecked="True" Click="CbCheckBox_Click" ToolTip="Check for updates when the app starts"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -206,22 +203,21 @@
                                 <LineBreak/>
                                 <Run Text="• You can also double-click a mercenary to edit them."/>
                                 <LineBreak/>
-                                <Run Text="• Frankenstein button is best button."/>
+                                <Run Text="• Frankenstein button is the best button."/>
                                 <LineBreak/>
                                 <Run Text="• Disable startup movies to load into the game a bit faster if you find yourself restarting a lot."/>
                                 <LineBreak/>
-                                <Run Text="• Enable shortcut keybinds in the Settings"/>
+                                <Run Text="• Enable shortcut keybinds in the Settings."/>
+                                <LineBreak/>
+                                <Run Text="• Your Horde mercenary will always be at the bottom."/>
                                 <LineBreak/>
                                 <Run Text="• You can select multiple mercenaries!"/>
                                 <LineBreak/>
                                 <Run Text="• Support Triternion, they're awesome! No seriously, they are. It literally says so on their website."/>
                                 <LineBreak/>
-                                <Run Text="• Always give love to Seymour! But also be wary..."/>
-                                <LineBreak/>
                                 <Run Text="• If you're a better programmer than me, which you probably are - you can help improve this program via GitHub."/>
                                 <InlineUIContainer>
-                                    <Separator
-                    />
+                                    <Separator/>
                                 </InlineUIContainer>
                             </Paragraph>
                         </FlowDocument>
