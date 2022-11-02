@@ -59,17 +59,20 @@ namespace Frankensteiner
         public void ProcessMercenaries()
         {
             int counter = 0;
-            foreach(string parsedMercenary in parsedMercenaries)
+            foreach (string parsedMercenary in parsedMercenaries)
             {
+                if (parsedMercenary.Contains("LOCGEN") || parsedMercenary.Contains("NSLOCTEXT"))
+                    continue;
+
                 // Create a new mercenary
                 MercenaryItem mercenary = new MercenaryItem(parsedMercenary);
                 mercenary.index = counter;
                 counter++;
                 // Name + ItemText
-                Regex rx = new Regex("\"(.*?)\""); // Use Regex to find the mercenary's name
-                mercenary.Name = rx.Match(parsedMercenary).Value.Replace("\"", ""); // Once found, remove the quotation marks - they were only used to help find the name
+                Regex rx = new Regex(@"Name=INVTEXT\(""(.+)""\),");
+                mercenary.Name = rx.Match(parsedMercenary).Groups[1].Value;
                 // Check if the Name is empty, if true - that means it's the Horde character and needs to be handled differently
-                if(!String.IsNullOrWhiteSpace(mercenary.Name))
+                if (!String.IsNullOrWhiteSpace(mercenary.Name))
                 {
                     /*
                     * We parse all of this to make re-writing the config file easier later. So instead of replacing only certain values which would be a headache
