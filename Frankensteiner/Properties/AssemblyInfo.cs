@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Frankensteiner")]
 [assembly: AssemblyDescription("Allows for the creation of asymmetric faces for the video game Mordhau.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("N/A")]
+[assembly: AssemblyCompany("Dealman & Halen84")]
 [assembly: AssemblyProduct("Frankensteiner")]
 [assembly: AssemblyCopyright("GNU GPLv3")]
 [assembly: AssemblyTrademark("N/A")]
@@ -53,6 +53,6 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 
 
-[assembly: AssemblyVersion("1.4.0.0")]
-[assembly: AssemblyFileVersion("1.4.0.0")]
+[assembly: AssemblyVersion("1.4.1.0")]
+[assembly: AssemblyFileVersion("1.4.1.0")]
 [assembly: NeutralResourcesLanguage("en")]
